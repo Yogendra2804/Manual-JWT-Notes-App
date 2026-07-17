@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Notes App</title>
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0f1419;
+      --surface: #1a2332;
+      --surface-2: #243044;
+      --border: #2d3a4f;
+      --text: #e7ecf3;
+      --muted: #8b9cb3;
+      --accent: #5b8def;
+      --accent-hover: #4a7ae0;
+      --success: #3ecf8e;
+      --danger: #ef6464;
+      --warning: #f0b429;
+      --radius: 12px;
+      --shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      background: linear-gradient(rgba(15, 20, 25, 0.8), rgba(15, 20, 25, 0.8)), url("./brand_icon.png") no-repeat center center fixed;
+      background-size: cover;
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    .app {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 3rem;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--accent), #7c5cff);
+      display: grid;
+      place-items: center;
+      font-size: 1.25rem;
+      overflow: hidden; /* Ensure image doesn't bleed outside border-radius */
+    }
+
+    .brand-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: inherit;
+    }
+
+    .brand h1 {
+      font-size: 1.35rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .brand p {
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.4rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      border: 1px solid var(--border);
+      background: var(--surface);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--warning);
+    }
+
+    .status-badge.connected .status-dot { background: var(--success); }
+    .status-badge.connected { border-color: rgba(62, 207, 142, 0.35); }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    /* Auth */
+    #auth-view {
+      max-width: 440px;
+      margin: 0 auto;
+    }
+
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tab {
+      flex: 1;
+      padding: 0.9rem 1rem;
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      position: relative;
+      transition: color 0.3s ease, background-color 0.3s ease;
+    }
+
+    .tab::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: var(--accent);
+      transform: scaleX(0);
+      transform-origin: right;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .tab:hover {
+      color: var(--text);
+      background-color: rgba(255, 255, 255, 0.03);
+    }
+
+    .tab.active {
+      color: var(--text);
+      background: var(--surface-2);
+    }
+
+    .tab.active::after {
+      transform: scaleX(1);
+      transform-origin: left;
+    }
+
+    .tab-content { display: none; padding: 1.5rem; }
+    .tab-content.active { display: block; }
+
+    .field { margin-bottom: 1rem; }
+
+    label {
+      display: block;
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin-bottom: 0.35rem;
+      font-weight: 500;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 0.7rem 0.85rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+      font: inherit;
+      outline: none;
+      transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+    }
+
+    input:focus, textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(91, 141, 239, 0.2), 0 4px 12px rgba(0, 0, 0, 0.15);
+      transform: translateY(-1px);
+    }
+
+    textarea { min-height: 110px; resize: vertical; }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      padding: 0.65rem 1rem;
+      border: none;
+      border-radius: 8px;
+      font: inherit;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent) 0%, #7c5cff 100%);
+      color: #fff;
+      width: 100%;
+      box-shadow: 0 4px 12px rgba(91, 141, 239, 0.2);
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, var(--accent-hover) 0%, #6b4fe6 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(91, 141, 239, 0.4), 0 0 30px rgba(124, 92, 255, 0.2);
+    }
+
+    .btn-primary:active {
+      transform: translateY(1px) scale(0.98);
+      box-shadow: 0 2px 6px rgba(91, 141, 239, 0.2);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--border);
+    }
+
+    .btn-ghost:hover {
+      color: var(--text);
+      background: var(--surface-2);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-danger {
+      background: rgba(239, 100, 100, 0.15);
+      color: var(--danger);
+      border: 1px solid rgba(239, 100, 100, 0.35);
+    }
+
+    .btn-danger:hover {
+      background: rgba(239, 100, 100, 0.25);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(239, 100, 100, 0.15);
+    }
+
+    .hint {
+      margin-top: 1rem;
+      padding: 0.75rem;
+      border-radius: 8px;
+      background: rgba(240, 180, 41, 0.08);
+      border: 1px solid rgba(240, 180, 41, 0.25);
+      color: #f5d78e;
+      font-size: 0.82rem;
+      line-height: 1.45;
+    }
+
+    /* Notes dashboard */
+    #notes-view { display: none; }
+
+    .notes-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface-2);
+    }
+
+    .user-chip {
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+
+    .user-chip strong { color: var(--text); }
+
+    .notes-layout {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      min-height: 520px;
+    }
+
+    @media (max-width: 820px) {
+      .notes-layout { grid-template-columns: 1fr; }
+    }
+
+    .notes-list {
+      border-right: 1px solid var(--border);
+      padding: 1rem;
+      overflow-y: auto;
+      max-height: 560px;
+    }
+
+    .notes-list h2 {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      margin-bottom: 0.75rem;
+    }
+
+    .note-card {
+      padding: 0.85rem;
+      border-radius: 10px;
+      border: 1px solid transparent;
+      background: var(--bg);
+      margin-bottom: 0.55rem;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    .note-card:hover { border-color: var(--border); }
+    .note-card.selected {
+      border-color: var(--accent);
+      background: rgba(91, 141, 239, 0.08);
+    }
+
+    .note-card h3 {
+      font-size: 0.95rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .note-card p {
+      font-size: 0.82rem;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .note-editor {
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .note-editor h2 {
+      font-size: 1rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .editor-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: auto;
+      padding-top: 0.5rem;
+    }
+
+    .empty-state {
+      text-align: center;
+      color: var(--muted);
+      padding: 2.5rem 1rem;
+      font-size: 0.9rem;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 1.25rem;
+      right: 1.25rem;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      font-size: 0.88rem;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 0.2s, transform 0.2s;
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header data-aos="fade-down" data-aos-duration="800">
+      <div class="brand">
+        <div class="brand-icon"><img src="./logo+notes_app.png" alt="Notes App Logo"></div>
+        <div>
+          <h1>Notes App</h1>
+          <p>JWT manual project</p>
+        </div>
+      </div>
+      <span class="status-badge" id="connection-status">
+        <span class="status-dot"></span>
+        <span id="status-text">Demo mode — backend not connected</span>
+      </span>
+    </header>
+
+    <!-- Auth -->
+    <section id="auth-view" class="panel" data-aos="zoom-in" data-aos-duration="600" data-aos-delay="200">
+      <div class="tabs">
+        <button class="tab active" data-tab="login">Login</button>
+        <button class="tab" data-tab="signup">Sign up</button>
+      </div>
+
+      <div id="login-tab" class="tab-content active">
+        <form id="login-form">
+          <div class="field">
+            <label for="login-email">Email</label>
+            <input type="email" id="login-email" placeholder="you@example.com" required />
+          </div>
+          <div class="field">
+            <label for="login-password">Password</label>
+            <input type="password" id="login-password" placeholder="••••••••" required />
+          </div>
+          <button type="submit" class="btn btn-primary">Log in</button>
+        </form>
+        <!-- <div class="hint">
+          Demo: any email/password opens the notes UI with sample data.
+          Set <code>API_CONNECTED = true</code> in this file to call your FastAPI endpoints.
+        </div> -->
+      </div>
+
+      <div id="signup-tab" class="tab-content">
+        <form id="signup-form">
+          <div class="field">
+            <label for="signup-username">Username</label>
+            <input type="text" id="signup-username" placeholder="min 6 characters" minlength="6" required />
+          </div>
+          <div class="field">
+            <label for="signup-email">Email</label>
+            <input type="email" id="signup-email" placeholder="you@example.com" required />
+          </div>
+          <div class="field">
+            <label for="signup-password">Password</label>
+            <input type="password" id="signup-password" placeholder="••••••••" required />
+          </div>
+          <button type="submit" class="btn btn-primary">Create account</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- Notes dashboard -->
+    <section id="notes-view" class="panel" data-aos="fade-up" data-aos-duration="600">
+      <div class="notes-toolbar">
+        <span class="user-chip">Signed in as <strong id="display-user">demo@example.com</strong></span>
+        <div style="display:flex;gap:0.5rem;">
+          <button class="btn btn-ghost" id="new-note-btn">+ New note</button>
+          <button class="btn btn-ghost" id="logout-btn">Log out</button>
+        </div>
+      </div>
+
+      <div class="notes-layout">
+        <aside class="notes-list">
+          <h2>Your notes</h2>
+          <div id="notes-container"></div>
+        </aside>
+
+        <div class="note-editor">
+          <h2 id="editor-heading">Select or create a note</h2>
+          <div class="field">
+            <label for="note-title">Title</label>
+            <input type="text" id="note-title" placeholder="Note title" />
+          </div>
+          <div class="field">
+            <label for="note-content">Content</label>
+            <textarea id="note-content" placeholder="Write your note here..."></textarea>
+          </div>
+          <div class="editor-actions">
+            <button class="btn btn-primary" id="save-note-btn" style="width:auto;">Save note</button>
+            <button class="btn btn-danger" id="delete-note-btn">Delete</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // Flip to true when you want the UI to call your FastAPI backend
+    const API_CONNECTED = true;
+    const API_BASE = "http://127.0.0.1:8000";
+
+    const DEMO_NOTES = [
+      { id: 1, title: "Welcome", content: "This is a demo note. Your backend is ready at /signup, /login, /get_user_notes, /writeNote, /deleteNote." },
+      { id: 2, title: "FastAPI endpoints", content: "Login returns access_token. Protected routes need Authorization: Bearer <token>." },
+      { id: 3, title: "Next step", content: "Set API_CONNECTED = true in index.html to wire this UI to your API." },
+    ];
+
+    let notes = [...DEMO_NOTES];
+    let selectedNoteId = null;
+    let accessToken = null;
+    let currentUser = "demo@example.com";
+
+    const authView = document.getElementById("auth-view");
+    const notesView = document.getElementById("notes-view");
+    const notesContainer = document.getElementById("notes-container");
+    const statusBadge = document.getElementById("connection-status");
+    const statusText = document.getElementById("status-text");
+
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 2600);
+    }
+
+    function updateConnectionBadge() {
+      if (API_CONNECTED) {
+        statusBadge.classList.add("connected");
+        statusText.textContent = "Connected to backend";
+      } else {
+        statusBadge.classList.remove("connected");
+        statusText.textContent = "Demo mode — backend not connected";
+      }
+    }
+
+    function showNotesView(email) {
+      currentUser = email;
+      document.getElementById("display-user").textContent = email;
+      authView.style.display = "none";
+      notesView.style.display = "block";
+      renderNotes();
+    }
+
+    function showAuthView() {
+      accessToken = null;
+      authView.style.display = "block";
+      notesView.style.display = "none";
+    }
+
+    function renderNotes() {
+      notesContainer.innerHTML = "";
+      if (notes.length === 0) {
+        notesContainer.innerHTML = '<div class="empty-state">No notes yet. Click "+ New note" to add one.</div>';
+        return;
+      }
+
+      notes.forEach((note) => {
+        const card = document.createElement("div");
+        card.className = "note-card" + (note.id === selectedNoteId ? " selected" : "");
+        card.innerHTML = `<h3>${escapeHtml(note.title)}</h3><p>${escapeHtml(note.content)}</p>`;
+        card.addEventListener("click", () => selectNote(note.id));
+        notesContainer.appendChild(card);
+      });
+    }
+
+    function selectNote(id) {
+      selectedNoteId = id;
+      const note = notes.find((n) => n.id === id);
+      if (!note) return;
+      document.getElementById("editor-heading").textContent = "Edit note";
+      document.getElementById("note-title").value = note.title;
+      document.getElementById("note-content").value = note.content;
+      renderNotes();
+    }
+
+    function clearEditor() {
+      selectedNoteId = null;
+      document.getElementById("editor-heading").textContent = "New note";
+      document.getElementById("note-title").value = "";
+      document.getElementById("note-content").value = "";
+      renderNotes();
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    async function apiFetch(path, options = {}) {
+      const headers = { "Content-Type": "application/json", ...(options.headers || {}) };
+      if (accessToken) headers["Authorization"] = `Bearer ${accessToken}`;
+      const res = await fetch(`${API_BASE}${path}`, { ...options, headers });
+      return res.json();
+    }
+
+    // Tabs
+    document.querySelectorAll(".tab").forEach((tab) => {
+      tab.addEventListener("click", () => {
+        document.querySelectorAll(".tab").forEach((t) => t.classList.remove("active"));
+        document.querySelectorAll(".tab-content").forEach((c) => c.classList.remove("active"));
+        tab.classList.add("active");
+        document.getElementById(`${tab.dataset.tab}-tab`).classList.add("active");
+      });
+    });
+
+    // Login
+    document.getElementById("login-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const mail = document.getElementById("login-email").value.trim();
+      const password = document.getElementById("login-password").value;
+
+      if (!API_CONNECTED) {
+        showToast("Demo login — showing sample notes");
+        showNotesView(mail);
+        return;
+      }
+
+      try {
+        const data = await apiFetch("/login", {
+          method: "POST",
+          body: JSON.stringify({ mail, password }),
+        });
+        if (data.access_token) {
+          accessToken = data.access_token;
+          showNotesView(mail);
+          const fetched = await apiFetch("/get_user_notes");
+          notes = Array.isArray(fetched) ? fetched : [];
+          selectedNoteId = null;
+          renderNotes();
+          showToast("Logged in successfully");
+        } else {
+          showToast(data.msg || "Login failed");
+        }
+      } catch {
+        showToast("Could not reach backend");
+      }
+    });
+
+    // Signup
+    document.getElementById("signup-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const username = document.getElementById("signup-username").value.trim();
+      const mail = document.getElementById("signup-email").value.trim();
+      const password = document.getElementById("signup-password").value;
+
+      if (!API_CONNECTED) {
+        showToast("Demo signup — switch to Login to continue");
+        document.querySelector('.tab[data-tab="login"]').click();
+        return;
+      }
+
+      try {
+        const data = await apiFetch("/signup", {
+          method: "POST",
+          body: JSON.stringify({ username, mail, password }),
+        });
+        showToast(data.msg || "Account created — please log in");
+        document.querySelector('.tab[data-tab="login"]').click();
+      } catch {
+        showToast("Could not reach backend");
+      }
+    });
+
+    // New note
+    document.getElementById("new-note-btn").addEventListener("click", clearEditor);
+
+    // Save note
+    document.getElementById("save-note-btn").addEventListener("click", async () => {
+      const title = document.getElementById("note-title").value.trim();
+      const content = document.getElementById("note-content").value.trim();
+      if (!title || !content) {
+        showToast("Title and content are required");
+        return;
+      }
+
+      if (!API_CONNECTED) {
+        if (selectedNoteId) {
+          const note = notes.find((n) => n.id === selectedNoteId);
+          if (note) { note.title = title; note.content = content; }
+          showToast("Demo: note updated locally");
+        } else {
+          notes.unshift({ id: Date.now(), title, content });
+          showToast("Demo: note saved locally");
+        }
+        renderNotes();
+        return;
+      }
+
+      try {
+        const data = await apiFetch("/writeNote", {
+          method: "POST",
+          body: JSON.stringify({ title, content }),
+        });
+        showToast(data.msg || "Note saved");
+        const fetched = await apiFetch("/get_user_notes");
+        notes = Array.isArray(fetched) ? fetched : notes;
+        renderNotes();
+      } catch {
+        showToast("Could not save note");
+      }
+    });
+
+    // Delete note
+    document.getElementById("delete-note-btn").addEventListener("click", async () => {
+      const title = document.getElementById("note-title").value.trim();
+      if (!title) {
+        showToast("Select a note to delete");
+        return;
+      }
+
+      if (!API_CONNECTED) {
+        notes = notes.filter((n) => n.id !== selectedNoteId);
+        clearEditor();
+        showToast("Demo: note deleted locally");
+        return;
+      }
+
+      try {
+        const data = await apiFetch("/deleteNote", {
+          method: "DELETE",
+          body: JSON.stringify({ title }),
+        });
+        showToast(data.msg || "Note deleted");
+        notes = notes.filter((n) => n.title !== title);
+        clearEditor();
+      } catch {
+        showToast("Could not delete note");
+      }
+    });
+
+    // Logout
+    document.getElementById("logout-btn").addEventListener("click", () => {
+      notes = [...DEMO_NOTES];
+      selectedNoteId = null;
+      showAuthView();
+      showToast("Logged out");
+    });
+
+    updateConnectionBadge();
+  </script>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>
+    AOS.init({
+      duration: 800,
+      once: true,
+      easing: 'ease-out-back',
+    });
+  </script>
+</body>
+</html>

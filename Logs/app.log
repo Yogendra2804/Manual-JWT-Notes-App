@@ -1,0 +1,94 @@
+2026-07-15 16:22:10,809 - Logs.zlogger - INFO - Engine created successfully. !
+2026-07-15 16:22:10,809 - Logs.zlogger - INFO - Base class created successfully. !
+2026-07-15 16:22:10,809 - Logs.zlogger - INFO - Session created successfully. !
+2026-07-15 16:22:10,842 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2026-07-15 16:22:10,842 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("user")
+2026-07-15 16:22:10,842 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-07-15 16:22:10,843 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("UserNotes")
+2026-07-15 16:22:10,843 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-07-15 16:22:10,844 - sqlalchemy.engine.Engine - INFO - COMMIT
+2026-07-15 16:22:10,976 - Logs.zlogger - INFO - Generating token. !
+2026-07-15 16:22:10,977 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2026-07-15 16:22:10,981 - sqlalchemy.engine.Engine - INFO - SELECT user.id, user.username, user.mail, user.hashed_password 
+FROM user 
+WHERE user.mail = ?
+2026-07-15 16:22:10,981 - sqlalchemy.engine.Engine - INFO - [generated in 0.00029s] ('tester@gmail.com',)
+2026-07-15 16:22:33,289 - Logs.zlogger - INFO - Signing up user. !
+2026-07-15 16:22:33,290 - Logs.zlogger - INFO - Checking if email is available. !
+2026-07-15 16:22:33,290 - sqlalchemy.engine.Engine - INFO - SELECT user.id, user.username, user.mail, user.hashed_password 
+FROM user 
+WHERE user.mail = ?
+2026-07-15 16:22:33,291 - sqlalchemy.engine.Engine - INFO - [cached since 22.31s ago] ('testuser@gmail.com',)
+2026-07-15 16:22:33,291 - Logs.zlogger - INFO - Email is available. !
+2026-07-15 16:22:33,291 - Logs.zlogger - INFO - User email is available. !
+2026-07-15 16:22:33,720 - sqlalchemy.engine.Engine - INFO - INSERT INTO user (username, mail, hashed_password) VALUES (?, ?, ?)
+2026-07-15 16:22:33,721 - sqlalchemy.engine.Engine - INFO - [generated in 0.00045s] ('testuser', 'testuser@gmail.com', '$2b$12$DY0KCL7H2NuFmrUaAV4Hz./cOdx0lAyNEgAKS0797h6.t0l2lfHYq')
+2026-07-15 16:22:33,728 - sqlalchemy.engine.Engine - INFO - COMMIT
+2026-07-15 16:22:33,731 - Logs.zlogger - INFO - User signed up successfully. !
+2026-07-15 16:22:35,775 - Logs.zlogger - INFO - Logging in user. !
+2026-07-15 16:22:35,776 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2026-07-15 16:22:35,777 - sqlalchemy.engine.Engine - INFO - SELECT user.id, user.username, user.mail, user.hashed_password 
+FROM user 
+WHERE user.mail = ?
+2026-07-15 16:22:35,777 - sqlalchemy.engine.Engine - INFO - [cached since 24.8s ago] ('testuser@gmail.com',)
+2026-07-15 16:22:36,174 - Logs.zlogger - INFO - Generating token. !
+2026-07-15 16:22:36,175 - sqlalchemy.engine.Engine - INFO - SELECT user.id, user.username, user.mail, user.hashed_password 
+FROM user 
+WHERE user.mail = ?
+2026-07-15 16:22:36,175 - sqlalchemy.engine.Engine - INFO - [cached since 25.19s ago] ('testuser@gmail.com',)
+2026-07-15 16:22:36,176 - Logs.zlogger - INFO - User logged in successfully. !
+2026-07-15 16:22:38,234 - Logs.zlogger - INFO - Getting current user. !
+2026-07-15 16:22:38,234 - Logs.zlogger - INFO - Verifying user token. !
+2026-07-15 16:22:38,234 - Logs.zlogger - INFO - User token verified. !
+2026-07-15 16:22:38,235 - Logs.zlogger - INFO - Writing note. !
+2026-07-15 16:22:38,237 - sqlalchemy.engine.Engine - INFO - INSERT INTO "UserNotes" (title, mail, content) VALUES (?, ?, ?) RETURNING id, created_date
+2026-07-15 16:22:38,237 - sqlalchemy.engine.Engine - INFO - [generated in 0.00031s] ('My Note', 'testuser@gmail.com', 'Hello World!')
+2026-07-15 16:22:38,244 - sqlalchemy.engine.Engine - INFO - COMMIT
+2026-07-15 16:22:38,247 - Logs.zlogger - INFO - Note added successfully. !
+2026-07-15 16:22:40,291 - Logs.zlogger - INFO - Getting current user. !
+2026-07-15 16:22:40,291 - Logs.zlogger - INFO - Verifying user token. !
+2026-07-15 16:22:40,292 - Logs.zlogger - INFO - User token verified. !
+2026-07-15 16:22:40,292 - Logs.zlogger - INFO - Getting notes. !
+2026-07-15 16:22:40,293 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2026-07-15 16:22:40,295 - sqlalchemy.engine.Engine - INFO - SELECT "UserNotes".id, "UserNotes".title, "UserNotes".created_date, "UserNotes".mail, "UserNotes".content 
+FROM "UserNotes" 
+WHERE "UserNotes".mail = ?
+2026-07-15 16:22:40,296 - sqlalchemy.engine.Engine - INFO - [generated in 0.00060s] ('testuser@gmail.com',)
+2026-07-15 16:22:40,297 - Logs.zlogger - INFO - Notes found. !
+2026-07-15 16:22:42,322 - Logs.zlogger - INFO - Getting current user. !
+2026-07-15 16:22:42,323 - Logs.zlogger - INFO - Verifying user token. !
+2026-07-15 16:22:42,323 - Logs.zlogger - INFO - User token verified. !
+2026-07-15 16:22:42,323 - Logs.zlogger - INFO - Deleting note. !
+2026-07-15 16:22:42,325 - sqlalchemy.engine.Engine - INFO - SELECT "UserNotes".id, "UserNotes".title, "UserNotes".created_date, "UserNotes".mail, "UserNotes".content 
+FROM "UserNotes" 
+WHERE "UserNotes".title = ? AND "UserNotes".mail = ?
+2026-07-15 16:22:42,326 - sqlalchemy.engine.Engine - INFO - [generated in 0.00040s] ('My Note', 'testuser@gmail.com')
+2026-07-15 16:22:42,333 - sqlalchemy.engine.Engine - INFO - DELETE FROM "UserNotes" WHERE "UserNotes".id = ?
+2026-07-15 16:22:42,333 - sqlalchemy.engine.Engine - INFO - [generated in 0.00041s] (8,)
+2026-07-15 16:22:42,335 - sqlalchemy.engine.Engine - INFO - COMMIT
+2026-07-15 16:22:42,338 - Logs.zlogger - INFO - Note deleted successfully. !
+2026-07-15 16:22:44,362 - Logs.zlogger - INFO - Getting current user. !
+2026-07-15 16:22:44,362 - Logs.zlogger - INFO - Verifying user token. !
+2026-07-15 16:22:44,362 - Logs.zlogger - INFO - User token verified. !
+2026-07-15 16:22:44,362 - Logs.zlogger - INFO - Getting notes. !
+2026-07-15 16:22:44,363 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2026-07-15 16:22:44,363 - sqlalchemy.engine.Engine - INFO - SELECT "UserNotes".id, "UserNotes".title, "UserNotes".created_date, "UserNotes".mail, "UserNotes".content 
+FROM "UserNotes" 
+WHERE "UserNotes".mail = ?
+2026-07-15 16:22:44,363 - sqlalchemy.engine.Engine - INFO - [cached since 4.068s ago] ('testuser@gmail.com',)
+2026-07-15 16:22:44,364 - Logs.zlogger - INFO - No notes found. !
+2026-07-15 17:17:10,636 - Logs.zlogger - INFO - Engine created successfully. !
+2026-07-15 17:17:10,636 - Logs.zlogger - INFO - Base class created successfully. !
+2026-07-15 17:17:10,636 - Logs.zlogger - INFO - Session created successfully. !
+2026-07-15 17:17:10,680 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2026-07-15 17:17:10,681 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("user")
+2026-07-15 17:17:10,681 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-07-15 17:17:10,685 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("UserNotes")
+2026-07-15 17:17:10,686 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-07-15 17:17:10,686 - sqlalchemy.engine.Engine - INFO - COMMIT
+2026-07-15 17:17:10,803 - Logs.zlogger - INFO - Generating token. !
+2026-07-15 17:17:10,804 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2026-07-15 17:17:10,814 - sqlalchemy.engine.Engine - INFO - SELECT user.id, user.username, user.mail, user.hashed_password 
+FROM user 
+WHERE user.mail = ?
+2026-07-15 17:17:10,814 - sqlalchemy.engine.Engine - INFO - [generated in 0.00049s] ('tester@gmail.com',)
