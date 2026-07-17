@@ -32,9 +32,24 @@ def verify_user_token(token: str):
         logger.info("Verifying user token. !")
         header, payload, signature = token.split(".")
 
+        from Token import make_signature
+        import hmac
+        import datetime
+
+        expected_signature = make_signature(header, payload)
+        if not hmac.compare_digest(signature, expected_signature):
+            logger.error("Signature verification failed. !")
+            return None
+
         decoded_payload = json.loads(
             base64.urlsafe_b64decode(payload + "==")
         )
+        
+        exp = decoded_payload.get("exp")
+        if exp and exp < datetime.datetime.utcnow().timestamp():
+            logger.error("Token has expired. !")
+            return None
+
         logger.info("User token verified. !")
         return decoded_payload.get("sub")
 

@@ -1,6 +1,6 @@
 import hashlib
-from fastapi import FastAPI , Depends
-from JWT_manual_schema import user_sent_data_signup , user_sent_data_login , user_new_note , user_delete_note
+from fastapi import FastAPI , Depends, HTTPException
+from JWT_manual_schema import user_sent_data_signup , user_sent_data_login , user_new_note , user_delete_note, user_delete_account
 from JWT_manul_auth_utils import verfiy_user  , verify_user_token , is_email_available , deleting_user ,password_context
 from Token import generate_token
 from engine import session
@@ -51,9 +51,7 @@ def signup_user(user_data : user_sent_data_signup):
     logger.info("Signing up user. !")
     
     if not is_email_available(user_data.mail): 
-        return {
-            "msg" : "mail already taken !" 
-        }
+        raise HTTPException(status_code=409, detail="mail already taken !")
     
     logger.info("User email is available. !")
     
@@ -86,9 +84,7 @@ def login_user(user_data : user_sent_data_login):
     logger.info("Logging in user. !")
     
     if not verfiy_user(user_data.password, user_data.mail):
-        return {
-            "msg" : "Invaild Credintials. Thankyiu but try again. !" 
-        }
+        raise HTTPException(status_code=401, detail="Invaild Credintials. Thankyiu but try again. !")
     
     token = generate_token(user_data.mail)
 
@@ -108,14 +104,12 @@ def login_user(user_data : user_sent_data_login):
 
 
 @app.delete("/delete")
-def delete_user(enter_pass : str , userMail =  Depends(get_current_user)):
+def delete_user(data : user_delete_account , userMail =  Depends(get_current_user)):
 
     logger.info("Deleting user. !")
     
-    if not verfiy_user(enter_pass , userMail):
-        return{
-            "msg" : "wrong password , Try again -_- "
-        }
+    if not verfiy_user(data.password , userMail):
+        raise HTTPException(status_code=401, detail="wrong password , Try again -_- ")
 
     if deleting_user(userMail):
         logger.info("User deleted successfully. !")
@@ -125,9 +119,7 @@ def delete_user(enter_pass : str , userMail =  Depends(get_current_user)):
     
     logger.error("User not deleted. !")
     
-    return{
-        "msg" : "Could not delete user for some reason, try again later . "        
-    }       
+    raise HTTPException(status_code=400, detail="Could not delete user for some reason, try again later . ")       
 
 
 @app.get("/get_user_notes")
@@ -173,9 +165,7 @@ def writeNote(data : user_new_note , userMail : str = Depends(get_current_user))
     
     except :
         logger.error("Note not added. !")
-        return {
-            "msg" : "Was not able to add note. Sry"
-        }
+        raise HTTPException(status_code=500, detail="Was not able to add note. Sry")
 
 @app.delete("/deleteNote")
 def deleteNote(data : user_delete_note , userMail : str = Depends(get_current_user)):
@@ -186,7 +176,7 @@ def deleteNote(data : user_delete_note , userMail : str = Depends(get_current_us
         note = session.scalars(select(UserNotes).where(UserNotes.title == data.title , UserNotes.mail == userMail)).first()
         if note is None:
             logger.error("Note not found. !")
-            return {"msg": "Note not found or not yours"}
+            raise HTTPException(status_code=404, detail="Note not found or not yours")
 
         session.delete(note)
         session.commit()
@@ -197,5 +187,5 @@ def deleteNote(data : user_delete_note , userMail : str = Depends(get_current_us
 
     except Exception as e:
         logger.error(f"Error deleting note: {e} !")
-        return {"msg": "Unable to delete note"}
+        raise HTTPException(status_code=500, detail="Unable to delete note")
 

@@ -19,3 +19,7 @@ class user_new_note(BaseModel):
 
 class user_delete_note(BaseModel):
     title : str
+
+
+class user_delete_account(BaseModel):
+    password : str

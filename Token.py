@@ -27,14 +27,18 @@ from pydantic import EmailStr , BaseModel
 from datetime import datetime , timedelta
 import hmac as HMAC
 import hashlib
+import os
+from dotenv import load_dotenv
 from BaseEncode64_CHATGPT import encoded_make_header , encoded_make_payload , base64url_encode
 from engine import session 
 from JWTmodels import Users 
 from sqlalchemy import select
 from Logs.zlogger import logger
 
+load_dotenv()
+
 ALGORITH = "HS256"
-SECRET_KEY = "tHI_IS_my_first_secrate_key" 
+SECRET_KEY = os.getenv("SECRET_KEY", "tHI_IS_my_first_secrate_key") 
 
 #what are the things i need 
 #what are the things i need 
