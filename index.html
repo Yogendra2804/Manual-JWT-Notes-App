@@ -3,740 +3,2307 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Notes App</title>
-  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+  <title>FastNote — Secure Notes with Manual JWT Auth</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Security & Markdown Parsers (HTTPS CDN) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.8/purify.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked@9.1.6/marked.min.js" crossorigin="anonymous"></script>
+
   <style>
+    /* ==========================================================================
+       DESIGN SYSTEM & CSS VARIABLES
+       ========================================================================== */
     :root {
-      --bg: #0f1419;
-      --surface: #1a2332;
-      --surface-2: #243044;
-      --border: #2d3a4f;
-      --text: #e7ecf3;
-      --muted: #8b9cb3;
-      --accent: #5b8def;
-      --accent-hover: #4a7ae0;
-      --success: #3ecf8e;
-      --danger: #ef6464;
-      --warning: #f0b429;
-      --radius: 12px;
-      --shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+      --bg-dark: #070a12;
+      --bg-canvas: radial-gradient(circle at 10% 10%, rgba(99, 102, 241, 0.15) 0%, transparent 45%),
+                        radial-gradient(circle at 90% 90%, rgba(6, 182, 212, 0.12) 0%, transparent 45%),
+                        radial-gradient(circle at 50% 50%, rgba(168, 85, 247, 0.08) 0%, transparent 60%),
+                        linear-gradient(180deg, #070a12 0%, #0c101d 100%);
+      
+      --surface-glass: rgba(15, 21, 36, 0.75);
+      --surface-card: rgba(20, 28, 46, 0.75);
+      --surface-card-hover: rgba(28, 39, 64, 0.85);
+      --surface-input: rgba(10, 15, 26, 0.85);
+      --surface-header: rgba(11, 16, 28, 0.85);
+
+      --border-glass: rgba(255, 255, 255, 0.09);
+      --border-glow: rgba(99, 102, 241, 0.35);
+      --border-focus: rgba(99, 102, 241, 0.65);
+
+      --accent-primary: #6366f1;
+      --accent-secondary: #06b6d4;
+      --accent-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #06b6d4 100%);
+      --accent-gradient-hover: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #0891b2 100%);
+      --accent-glow: rgba(99, 102, 241, 0.35);
+
+      --text-main: #f8fafc;
+      --text-secondary: #cbd5e1;
+      --text-muted: #64748b;
+      --text-inverse: #0f172a;
+
+      --danger: #ef4444;
+      --danger-bg: rgba(239, 68, 68, 0.12);
+      --danger-border: rgba(239, 68, 68, 0.3);
+
+      --success: #10b981;
+      --success-bg: rgba(16, 185, 129, 0.12);
+      --warning: #f59e0b;
+      --warning-bg: rgba(245, 158, 11, 0.12);
+
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --radius-full: 9999px;
+
+      --shadow-glass: 0 16px 40px -8px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      --shadow-glow: 0 0 25px rgba(99, 102, 241, 0.25);
+      
+      --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+
+      --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+      --transition-normal: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      --transition-smooth: 0.35s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    /* Reset */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     body {
-      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
-      background: linear-gradient(rgba(15, 20, 25, 0.8), rgba(15, 20, 25, 0.8)), url("./brand_icon.png") no-repeat center center fixed;
-      background-size: cover;
-      color: var(--text);
+      font-family: var(--font-sans);
+      background: var(--bg-canvas);
+      background-attachment: fixed;
+      color: var(--text-main);
       min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
     }
 
-    .app {
-      max-width: 1100px;
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.2);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: var(--radius-full);
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    /* Focus States */
+    :focus-visible {
+      outline: 2px solid var(--accent-primary);
+      outline-offset: 2px;
+    }
+
+    /* Helper Utilities */
+    .icon {
+      display: inline-block;
+      width: 1.15em;
+      height: 1.15em;
+      stroke-width: 2;
+      stroke: currentColor;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      vertical-align: middle;
+      flex-shrink: 0;
+    }
+
+    /* Backdrop Glass Container */
+    .glass-panel {
+      background: var(--surface-glass);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-glass);
+    }
+
+    /* ==========================================================================
+       HEADER & NAVIGATION
+       ========================================================================== */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: var(--surface-header);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-glass);
+      padding: 0.75rem 1.5rem;
+    }
+
+    .nav-container {
+      max-width: 1440px;
       margin: 0 auto;
-      padding: 2rem 1.25rem 3rem;
-    }
-
-    header {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 1rem;
-      margin-bottom: 2rem;
     }
 
-    .brand {
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: var(--text-main);
+    }
+
+    .logo-icon-box {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-md);
+      background: var(--accent-gradient);
+      display: grid;
+      place-items: center;
+      box-shadow: var(--shadow-glow);
+      transition: transform var(--transition-normal);
+    }
+
+    .brand-logo:hover .logo-icon-box {
+      transform: scale(1.05) rotate(-3deg);
+    }
+
+    .brand-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      background: linear-gradient(135deg, #fff 0%, #cbd5e1 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .badge-jwt {
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 0.15rem 0.5rem;
+      border-radius: var(--radius-full);
+      background: rgba(99, 102, 241, 0.15);
+      color: var(--accent-primary);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .nav-controls {
       display: flex;
       align-items: center;
       gap: 0.75rem;
     }
 
-    .brand-icon {
-      width: 42px;
-      height: 42px;
-      border-radius: 10px;
-      background: linear-gradient(135deg, var(--accent), #7c5cff);
-      display: grid;
-      place-items: center;
-      font-size: 1.25rem;
-      overflow: hidden; /* Ensure image doesn't bleed outside border-radius */
-    }
-
-    .brand-icon img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      border-radius: inherit;
-    }
-
-    .brand h1 {
-      font-size: 1.35rem;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-    }
-
-    .brand p {
-      color: var(--muted);
-      font-size: 0.85rem;
-    }
-
-    .status-badge {
+    .status-pill {
       display: inline-flex;
       align-items: center;
       gap: 0.45rem;
-      padding: 0.4rem 0.75rem;
-      border-radius: 999px;
+      padding: 0.35rem 0.75rem;
+      border-radius: var(--radius-full);
       font-size: 0.78rem;
       font-weight: 600;
-      border: 1px solid var(--border);
-      background: var(--surface);
+      background: rgba(10, 15, 26, 0.6);
+      border: 1px solid var(--border-glass);
+      color: var(--text-secondary);
     }
 
     .status-dot {
       width: 8px;
       height: 8px;
       border-radius: 50%;
+      background: var(--success);
+      box-shadow: 0 0 10px var(--success);
+      animation: pulse 2s infinite;
+    }
+
+    .status-dot.offline {
       background: var(--warning);
+      box-shadow: 0 0 10px var(--warning);
     }
 
-    .status-badge.connected .status-dot { background: var(--success); }
-    .status-badge.connected { border-color: rgba(62, 207, 142, 0.35); }
-
-    .panel {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      overflow: hidden;
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(0.9); }
     }
 
-    /* Auth */
-    #auth-view {
-      max-width: 440px;
-      margin: 0 auto;
-    }
-
-    .tabs {
-      display: flex;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .tab {
-      flex: 1;
-      padding: 0.9rem 1rem;
-      background: transparent;
-      border: none;
-      color: var(--muted);
-      font-size: 0.95rem;
-      font-weight: 600;
-      cursor: pointer;
-      position: relative;
-      transition: color 0.3s ease, background-color 0.3s ease;
-    }
-
-    .tab::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 2px;
-      background: var(--accent);
-      transform: scaleX(0);
-      transform-origin: right;
-      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .tab:hover {
-      color: var(--text);
-      background-color: rgba(255, 255, 255, 0.03);
-    }
-
-    .tab.active {
-      color: var(--text);
-      background: var(--surface-2);
-    }
-
-    .tab.active::after {
-      transform: scaleX(1);
-      transform-origin: left;
-    }
-
-    .tab-content { display: none; padding: 1.5rem; }
-    .tab-content.active { display: block; }
-
-    .field { margin-bottom: 1rem; }
-
-    label {
-      display: block;
-      font-size: 0.82rem;
-      color: var(--muted);
-      margin-bottom: 0.35rem;
-      font-weight: 500;
-    }
-
-    input, textarea {
-      width: 100%;
-      padding: 0.7rem 0.85rem;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      background: var(--bg);
-      color: var(--text);
-      font: inherit;
-      outline: none;
-      transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
-    }
-
-    input:focus, textarea:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(91, 141, 239, 0.2), 0 4px 12px rgba(0, 0, 0, 0.15);
-      transform: translateY(-1px);
-    }
-
-    textarea { min-height: 110px; resize: vertical; }
-
+    /* Buttons */
     .btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 0.4rem;
-      padding: 0.65rem 1rem;
-      border: none;
-      border-radius: 8px;
-      font: inherit;
+      gap: 0.5rem;
+      padding: 0.6rem 1.1rem;
+      border-radius: var(--radius-md);
+      font-family: inherit;
+      font-size: 0.88rem;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      border: 1px solid transparent;
+      transition: all var(--transition-normal);
+      text-decoration: none;
+      white-space: nowrap;
+      user-select: none;
     }
 
     .btn-primary {
-      background: linear-gradient(135deg, var(--accent) 0%, #7c5cff 100%);
+      background: var(--accent-gradient);
       color: #fff;
-      width: 100%;
-      box-shadow: 0 4px 12px rgba(91, 141, 239, 0.2);
+      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
     }
 
     .btn-primary:hover {
-      background: linear-gradient(135deg, var(--accent-hover) 0%, #6b4fe6 100%);
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(91, 141, 239, 0.4), 0 0 30px rgba(124, 92, 255, 0.2);
+      background: var(--accent-gradient-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 8px 25px rgba(99, 102, 241, 0.45);
     }
 
     .btn-primary:active {
-      transform: translateY(1px) scale(0.98);
-      box-shadow: 0 2px 6px rgba(91, 141, 239, 0.2);
+      transform: translateY(1px);
     }
 
-    .btn-ghost {
-      background: transparent;
-      color: var(--muted);
-      border: 1px solid var(--border);
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-main);
+      border-color: var(--border-glass);
     }
 
-    .btn-ghost:hover {
-      color: var(--text);
-      background: var(--surface-2);
-      transform: translateY(-2px);
-      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
     }
 
     .btn-danger {
-      background: rgba(239, 100, 100, 0.15);
+      background: var(--danger-bg);
       color: var(--danger);
-      border: 1px solid rgba(239, 100, 100, 0.35);
+      border-color: var(--danger-border);
     }
 
     .btn-danger:hover {
-      background: rgba(239, 100, 100, 0.25);
-      transform: translateY(-2px);
-      box-shadow: 0 6px 15px rgba(239, 100, 100, 0.15);
+      background: rgba(239, 68, 68, 0.25);
+      border-color: var(--danger);
+      color: #fff;
     }
 
-    .hint {
-      margin-top: 1rem;
-      padding: 0.75rem;
-      border-radius: 8px;
-      background: rgba(240, 180, 41, 0.08);
-      border: 1px solid rgba(240, 180, 41, 0.25);
-      color: #f5d78e;
+    .btn-danger:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    .btn-icon-only {
+      padding: 0.55rem;
+      border-radius: var(--radius-md);
+    }
+
+    /* App Container */
+    .app-main {
+      flex: 1;
+      max-width: 1440px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ==========================================================================
+       AUTH VIEW (LOGIN & SIGNUP)
+       ========================================================================== */
+    .auth-wrapper {
+      max-width: 440px;
+      width: 100%;
+      margin: auto;
+      padding: 2.25rem;
+      animation: fadeIn 0.5s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .auth-header {
+      text-align: center;
+      margin-bottom: 1.75rem;
+    }
+
+    .auth-header h2 {
+      font-size: 1.65rem;
+      font-weight: 800;
+      margin-bottom: 0.35rem;
+      letter-spacing: -0.02em;
+    }
+
+    .auth-header p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .auth-tabs {
+      display: flex;
+      background: rgba(0, 0, 0, 0.25);
+      padding: 0.25rem;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-glass);
+      margin-bottom: 1.5rem;
+    }
+
+    .auth-tab-btn {
+      flex: 1;
+      padding: 0.6rem;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-family: inherit;
+      font-size: 0.88rem;
+      font-weight: 600;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .auth-tab-btn.active {
+      background: var(--surface-card);
+      color: var(--text-main);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .form-group {
+      margin-bottom: 1.15rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 0.4rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 0.85rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 0.75rem 1rem 0.75rem 2.6rem;
+      background: var(--surface-input);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-md);
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 0.92rem;
+      outline: none;
+      transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+    }
+
+    .form-control:focus {
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+    }
+
+    .toggle-pw-btn {
+      position: absolute;
+      right: 0.75rem;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 0.25rem;
+    }
+
+    .toggle-pw-btn:hover {
+      color: var(--text-main);
+    }
+
+    .demo-hint {
+      margin-top: 1.25rem;
+      padding: 0.85rem 1rem;
+      border-radius: var(--radius-md);
+      background: rgba(99, 102, 241, 0.08);
+      border: 1px solid rgba(99, 102, 241, 0.2);
+      color: var(--text-secondary);
       font-size: 0.82rem;
       line-height: 1.45;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.6rem;
     }
 
-    /* Notes dashboard */
-    #notes-view { display: none; }
-
-    .notes-toolbar {
+    /* ==========================================================================
+       GOOGLE KEEP INSPIRED WORKSPACE & TOOLBAR
+       ========================================================================== */
+    .workspace-top-bar {
       display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
       flex-wrap: wrap;
+    }
+
+    .search-box-large {
+      position: relative;
+      flex: 1;
+      max-width: 540px;
+    }
+
+    .search-box-large input {
+      padding-left: 2.6rem;
+      padding-right: 2.5rem;
+      height: 44px;
+      font-size: 0.95rem;
+      background: rgba(15, 22, 38, 0.8);
+      border-radius: var(--radius-md);
+    }
+
+    .search-clear-btn {
+      position: absolute;
+      right: 0.75rem;
+      top: 50%;
+      transform: translateY(-50%);
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: none;
+    }
+
+    .search-clear-btn.visible {
+      display: block;
+    }
+
+    .workspace-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .layout-toggle-group {
+      display: flex;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 0.2rem;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-glass);
+    }
+
+    .layout-toggle-btn {
+      padding: 0.4rem 0.8rem;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-family: inherit;
+      font-size: 0.82rem;
+      font-weight: 600;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .layout-toggle-btn.active {
+      background: var(--surface-card-hover);
+      color: var(--text-main);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    }
+
+    /* GOOGLE KEEP STYLE "TAKE A NOTE..." COMPOSER */
+    .keep-composer {
+      max-width: 640px;
+      width: 100%;
+      margin: 0 auto 1.75rem auto;
+      padding: 0.85rem 1.25rem;
+      border-radius: var(--radius-lg);
+      background: rgba(18, 26, 43, 0.8);
+      border: 1px solid var(--border-glass);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+      transition: all var(--transition-normal);
+      cursor: text;
+    }
+
+    .keep-composer.expanded {
+      padding: 1.1rem 1.25rem;
+      border-color: var(--border-glow);
+      box-shadow: 0 16px 40px rgba(99, 102, 241, 0.2);
+    }
+
+    .composer-header {
+      display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 0.75rem;
-      padding: 1rem 1.25rem;
-      border-bottom: 1px solid var(--border);
-      background: var(--surface-2);
     }
 
-    .user-chip {
-      font-size: 0.88rem;
-      color: var(--muted);
+    .composer-title-input {
+      width: 100%;
+      background: transparent;
+      border: none;
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 1.05rem;
+      font-weight: 700;
+      outline: none;
     }
 
-    .user-chip strong { color: var(--text); }
-
-    .notes-layout {
-      display: grid;
-      grid-template-columns: 1fr 1.2fr;
-      min-height: 520px;
+    .composer-textarea {
+      width: 100%;
+      min-height: 90px;
+      margin-top: 0.75rem;
+      background: transparent;
+      border: none;
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      font-size: 0.92rem;
+      line-height: 1.55;
+      resize: vertical;
+      outline: none;
     }
 
-    @media (max-width: 820px) {
-      .notes-layout { grid-template-columns: 1fr; }
+    .composer-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 0.85rem;
+      padding-top: 0.6rem;
+      border-top: 1px solid var(--border-glass);
     }
 
-    .notes-list {
-      border-right: 1px solid var(--border);
-      padding: 1rem;
-      overflow-y: auto;
-      max-height: 560px;
+    .composer-color-picker {
+      display: flex;
+      gap: 0.4rem;
     }
 
-    .notes-list h2 {
-      font-size: 0.78rem;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: var(--muted);
-      margin-bottom: 0.75rem;
-    }
-
-    .note-card {
-      padding: 0.85rem;
-      border-radius: 10px;
-      border: 1px solid transparent;
-      background: var(--bg);
-      margin-bottom: 0.55rem;
+    .color-dot-btn {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 2px solid transparent;
       cursor: pointer;
-      transition: border-color 0.15s, background 0.15s;
+      transition: transform var(--transition-fast);
     }
 
-    .note-card:hover { border-color: var(--border); }
-    .note-card.selected {
-      border-color: var(--accent);
-      background: rgba(91, 141, 239, 0.08);
+    .color-dot-btn:hover {
+      transform: scale(1.2);
     }
 
-    .note-card h3 {
-      font-size: 0.95rem;
-      margin-bottom: 0.25rem;
+    .color-dot-btn.selected {
+      border-color: #fff;
+      transform: scale(1.15);
     }
 
-    .note-card p {
-      font-size: 0.82rem;
-      color: var(--muted);
+    /* Note Card Themes */
+    .theme-default { --card-accent: rgba(99, 102, 241, 0.25); --card-bg: rgba(20, 28, 46, 0.75); }
+    .theme-coral { --card-accent: rgba(244, 63, 94, 0.35); --card-bg: rgba(45, 20, 28, 0.8); }
+    .theme-amber { --card-accent: rgba(245, 158, 11, 0.35); --card-bg: rgba(45, 35, 18, 0.8); }
+    .theme-mint { --card-accent: rgba(16, 185, 129, 0.35); --card-bg: rgba(18, 45, 32, 0.8); }
+    .theme-cyan { --card-accent: rgba(6, 182, 212, 0.35); --card-bg: rgba(18, 40, 50, 0.8); }
+    .theme-violet { --card-accent: rgba(168, 85, 247, 0.35); --card-bg: rgba(35, 20, 55, 0.8); }
+
+    /* MASONRY / GRID LAYOUT */
+    .section-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .notes-grid-view {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.1rem;
+      margin-bottom: 2rem;
+    }
+
+    /* KEEP STYLE CARD */
+    .keep-card {
+      background: var(--card-bg, var(--surface-card));
+      border: 1px solid var(--card-accent, var(--border-glass));
+      border-radius: var(--radius-md);
+      padding: 1.1rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      transition: all var(--transition-normal);
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+    }
+
+    .keep-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.4), 0 0 20px var(--card-accent);
+    }
+
+    .keep-card.pinned {
+      border-top: 3px solid var(--accent-primary);
+    }
+
+    .card-top-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 0.5rem;
+      margin-bottom: 0.55rem;
+    }
+
+    .card-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-main);
+      line-height: 1.35;
+      word-break: break-word;
+    }
+
+    .card-pin-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 0.2rem;
+      transition: color var(--transition-fast), transform var(--transition-fast);
+    }
+
+    .card-pin-btn:hover, .card-pin-btn.active {
+      color: var(--warning);
+      transform: scale(1.15);
+    }
+
+    .card-snippet {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      display: -webkit-box;
+      -webkit-line-clamp: 5;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      margin-bottom: 1rem;
+      word-break: break-word;
+    }
+
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 0.6rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      font-size: 0.76rem;
+      color: var(--text-muted);
+    }
+
+    .card-actions-hover {
+      display: flex;
+      gap: 0.35rem;
+      opacity: 0.3;
+      transition: opacity var(--transition-fast);
+    }
+
+    .keep-card:hover .card-actions-hover {
+      opacity: 1;
+    }
+
+    .card-action-icon-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: none;
+      color: var(--text-secondary);
+      border-radius: var(--radius-sm);
+      padding: 0.3rem;
+      cursor: pointer;
+      transition: background var(--transition-fast);
+    }
+
+    .card-action-icon-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      color: var(--text-main);
+    }
+
+    /* SIDEBAR + EDITOR LAYOUT MODE */
+    .split-workspace-layout {
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      gap: 1.25rem;
+      flex: 1;
+      min-height: calc(100vh - 140px);
+    }
+
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      max-height: calc(100vh - 140px);
+      overflow: hidden;
+    }
+
+    .notes-list-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+    }
+
+    .note-item {
+      padding: 0.9rem 1rem;
+      border-radius: var(--radius-md);
+      background: rgba(15, 23, 42, 0.4);
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all var(--transition-normal);
+      position: relative;
+    }
+
+    .note-item:hover {
+      background: var(--surface-card-hover);
+      border-color: var(--border-glass);
+      transform: translateX(2px);
+    }
+
+    .note-item.active {
+      background: rgba(99, 102, 241, 0.14);
+      border-color: var(--border-glow);
+      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.1);
+    }
+
+    .note-item.active::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 15%;
+      bottom: 15%;
+      width: 3px;
+      background: var(--accent-gradient);
+      border-radius: 0 4px 4px 0;
+    }
+
+    .note-item-title {
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: 0.3rem;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
 
-    .note-editor {
-      padding: 1.25rem;
+    .note-item-snippet {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      line-height: 1.4;
+    }
+
+    /* Editor Pane */
+    .editor-pane {
       display: flex;
       flex-direction: column;
+      height: 100%;
+      max-height: calc(100vh - 140px);
+      overflow: hidden;
+    }
+
+    .editor-toolbar {
+      padding: 0.85rem 1.25rem;
+      border-bottom: 1px solid var(--border-glass);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .editor-title-input {
+      font-family: inherit;
+      font-size: 1.2rem;
+      font-weight: 700;
+      background: transparent;
+      border: none;
+      color: var(--text-main);
+      outline: none;
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .editor-title-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .view-mode-tabs {
+      display: flex;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 0.2rem;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-glass);
+    }
+
+    .view-mode-btn {
+      padding: 0.35rem 0.75rem;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-family: inherit;
+      font-size: 0.8rem;
+      font-weight: 600;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .view-mode-btn.active {
+      background: var(--accent-primary);
+      color: #fff;
+    }
+
+    .status-badge-save {
+      font-size: 0.75rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.2rem 0.55rem;
+      border-radius: var(--radius-full);
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-muted);
+    }
+
+    .status-badge-save.unsaved {
+      background: var(--warning-bg);
+      color: var(--warning);
+    }
+
+    .status-badge-save.saving {
+      background: rgba(99, 102, 241, 0.15);
+      color: var(--accent-primary);
+    }
+
+    .editor-content-area {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .editor-content-area.split-view {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .editor-textarea {
+      width: 100%;
+      height: 100%;
+      padding: 1.25rem;
+      background: transparent;
+      border: none;
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+      line-height: 1.6;
+      resize: none;
+      outline: none;
+    }
+
+    .markdown-preview-pane {
+      height: 100%;
+      padding: 1.25rem;
+      overflow-y: auto;
+      background: rgba(7, 10, 18, 0.45);
+      border-left: 1px solid var(--border-glass);
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      line-height: 1.65;
+    }
+
+    .markdown-preview-pane h1, 
+    .markdown-preview-pane h2, 
+    .markdown-preview-pane h3 {
+      color: var(--text-main);
+      margin-top: 1.2rem;
+      margin-bottom: 0.6rem;
+    }
+    .markdown-preview-pane h1 { font-size: 1.5rem; border-bottom: 1px solid var(--border-glass); padding-bottom: 0.3rem; }
+    .markdown-preview-pane h2 { font-size: 1.25rem; }
+    .markdown-preview-pane h3 { font-size: 1.1rem; }
+    .markdown-preview-pane p { margin-bottom: 0.85rem; }
+    .markdown-preview-pane ul, .markdown-preview-pane ol { padding-left: 1.5rem; margin-bottom: 0.85rem; }
+    .markdown-preview-pane code {
+      font-family: var(--font-mono);
+      background: rgba(255, 255, 255, 0.08);
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+    .markdown-preview-pane pre {
+      background: #050810;
+      padding: 1rem;
+      border-radius: var(--radius-md);
+      overflow-x: auto;
+      border: 1px solid var(--border-glass);
+      margin-bottom: 1rem;
+    }
+    .markdown-preview-pane blockquote {
+      border-left: 3px solid var(--accent-primary);
+      padding-left: 1rem;
+      color: var(--text-muted);
+      font-style: italic;
+      margin-bottom: 1rem;
+    }
+
+    .editor-footer {
+      padding: 0.65rem 1.25rem;
+      border-top: 1px solid var(--border-glass);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(15, 23, 42, 0.4);
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .highlight-match {
+      background: rgba(245, 158, 11, 0.35);
+      color: #fff;
+      border-radius: 2px;
+      padding: 0 2px;
+    }
+
+    /* Skeleton Loading State */
+    .skeleton-card {
+      height: 120px;
+      border-radius: var(--radius-md);
+      background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.03) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+    }
+
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* Empty States */
+    .empty-state-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 4rem 1.5rem;
+      color: var(--text-muted);
       gap: 0.75rem;
     }
 
-    .note-editor h2 {
-      font-size: 1rem;
-      margin-bottom: 0.25rem;
+    .empty-state-icon {
+      width: 54px;
+      height: 54px;
+      stroke-width: 1.5;
+      color: var(--text-muted);
+      opacity: 0.5;
     }
 
-    .editor-actions {
-      display: flex;
-      gap: 0.5rem;
-      margin-top: auto;
-      padding-top: 0.5rem;
-    }
-
-    .empty-state {
-      text-align: center;
-      color: var(--muted);
-      padding: 2.5rem 1rem;
-      font-size: 0.9rem;
-    }
-
-    .toast {
+    /* MODALS */
+    .modal-backdrop {
       position: fixed;
-      bottom: 1.25rem;
-      right: 1.25rem;
-      padding: 0.75rem 1rem;
-      border-radius: 8px;
-      background: var(--surface-2);
-      border: 1px solid var(--border);
-      box-shadow: var(--shadow);
-      font-size: 0.88rem;
-      opacity: 0;
-      transform: translateY(8px);
-      transition: opacity 0.2s, transform 0.2s;
-      pointer-events: none;
+      inset: 0;
       z-index: 100;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      display: grid;
+      place-items: center;
+      padding: 1.5rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--transition-normal);
     }
 
-    .toast.show {
+    .modal-backdrop.open {
       opacity: 1;
-      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .modal-card {
+      max-width: 480px;
+      width: 100%;
+      padding: 1.75rem;
+      transform: scale(0.95) translateY(10px);
+      transition: transform var(--transition-normal);
+    }
+
+    .modal-backdrop.open .modal-card {
+      transform: scale(1) translateY(0);
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.25rem;
+    }
+
+    .modal-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .danger-box {
+      border: 1px solid var(--danger-border);
+      background: var(--danger-bg);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+      margin-top: 1rem;
+    }
+
+    .danger-box h4 {
+      color: var(--danger);
+      font-size: 0.9rem;
+      margin-bottom: 0.4rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .danger-box p {
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      line-height: 1.45;
+      margin-bottom: 0.85rem;
+    }
+
+    /* TOASTS */
+    .toast-container {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      z-index: 120;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      pointer-events: none;
+    }
+
+    .toast-item {
+      pointer-events: auto;
+      min-width: 280px;
+      padding: 0.85rem 1.1rem;
+      border-radius: var(--radius-md);
+      background: var(--surface-header);
+      border: 1px solid var(--border-glass);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+      color: var(--text-main);
+      font-size: 0.88rem;
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      animation: slideUpFade 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes slideUpFade {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .toast-item.success { border-color: rgba(16, 185, 129, 0.4); }
+    .toast-item.success .toast-icon { color: var(--success); }
+    .toast-item.error { border-color: var(--danger-border); }
+    .toast-item.error .toast-icon { color: var(--danger); }
+    .toast-item.info .toast-icon { color: var(--accent-primary); }
+
+    /* Responsive Layout */
+    @media (max-width: 860px) {
+      .split-workspace-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        position: fixed;
+        inset: 0;
+        z-index: 60;
+        background: var(--bg-dark);
+        transform: translateX(-100%);
+        transition: transform var(--transition-smooth);
+        max-height: 100vh;
+      }
+
+      .sidebar.mobile-open {
+        transform: translateX(0);
+      }
+
+      .mobile-menu-toggle {
+        display: inline-flex !important;
+      }
+    }
+
+    .mobile-menu-toggle {
+      display: none;
     }
   </style>
 </head>
 <body>
-  <div class="app">
-    <header data-aos="fade-down" data-aos-duration="800">
-      <div class="brand">
-        <div class="brand-icon"><img src="./logo+notes_app.png" alt="Notes App Logo"></div>
-        <div>
-          <h1>Notes App</h1>
-          <p>JWT manual project</p>
+
+  <!-- NAVBAR -->
+  <header class="navbar">
+    <div class="nav-container">
+      <div style="display:flex; align-items:center; gap:0.75rem;">
+        <button class="btn btn-secondary btn-icon-only mobile-menu-toggle" id="mobile-drawer-toggle" aria-label="Toggle notes menu">
+          <svg class="icon" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+        <a href="#" class="brand-logo" id="brand-home-btn">
+          <div class="logo-icon-box">
+            <svg class="icon" style="width:1.4em; height:1.4em; color:#fff;" viewBox="0 0 24 24"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+          </div>
+          <div>
+            <span class="brand-title">FastNote</span>
+            <span class="badge-jwt">Manual JWT</span>
+          </div>
+        </a>
+      </div>
+
+      <div class="nav-controls">
+        <div class="status-pill" id="backend-status-pill">
+          <span class="status-dot" id="status-dot"></span>
+          <span id="status-text">Connected</span>
+        </div>
+
+        <div id="user-profile-menu" style="display:none;">
+          <button class="btn btn-secondary" id="account-settings-btn">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            <span id="nav-user-email">user@example.com</span>
+          </button>
         </div>
       </div>
-      <span class="status-badge" id="connection-status">
-        <span class="status-dot"></span>
-        <span id="status-text">Demo mode — backend not connected</span>
-      </span>
-    </header>
+    </div>
+  </header>
 
-    <!-- Auth -->
-    <section id="auth-view" class="panel" data-aos="zoom-in" data-aos-duration="600" data-aos-delay="200">
-      <div class="tabs">
-        <button class="tab active" data-tab="login">Login</button>
-        <button class="tab" data-tab="signup">Sign up</button>
+  <!-- MAIN APP CONTAINER -->
+  <main class="app-main">
+
+    <!-- AUTHENTICATION CARD (Logged Out State) -->
+    <section id="auth-section" class="auth-wrapper glass-panel" style="display:none;">
+      <div class="auth-header">
+        <h2>Welcome Back</h2>
+        <p>Sign in to access your encrypted notes</p>
       </div>
 
-      <div id="login-tab" class="tab-content active">
-        <form id="login-form">
-          <div class="field">
-            <label for="login-email">Email</label>
-            <input type="email" id="login-email" placeholder="you@example.com" required />
-          </div>
-          <div class="field">
-            <label for="login-password">Password</label>
-            <input type="password" id="login-password" placeholder="••••••••" required />
-          </div>
-          <button type="submit" class="btn btn-primary">Log in</button>
-        </form>
-        <!-- <div class="hint">
-          Demo: any email/password opens the notes UI with sample data.
-          Set <code>API_CONNECTED = true</code> in this file to call your FastAPI endpoints.
-        </div> -->
+      <div class="auth-tabs" role="tablist">
+        <button class="auth-tab-btn active" id="tab-login" role="tab" aria-selected="true">Sign In</button>
+        <button class="auth-tab-btn" id="tab-signup" role="tab" aria-selected="false">Create Account</button>
       </div>
 
-      <div id="signup-tab" class="tab-content">
-        <form id="signup-form">
-          <div class="field">
-            <label for="signup-username">Username</label>
-            <input type="text" id="signup-username" placeholder="min 6 characters" minlength="6" required />
+      <!-- Login Form -->
+      <form id="form-login">
+        <div class="form-group">
+          <label for="login-email">Email Address</label>
+          <div class="input-wrapper">
+            <svg class="icon input-icon" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+            <input type="email" id="login-email" class="form-control" placeholder="alex@example.com" required autocomplete="email" />
           </div>
-          <div class="field">
-            <label for="signup-email">Email</label>
-            <input type="email" id="signup-email" placeholder="you@example.com" required />
+        </div>
+
+        <div class="form-group">
+          <label for="login-password">Password</label>
+          <div class="input-wrapper">
+            <svg class="icon input-icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            <input type="password" id="login-password" class="form-control" placeholder="••••••••" required autocomplete="current-password" />
+            <button type="button" class="toggle-pw-btn" data-target="login-password" aria-label="Toggle password visibility">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            </button>
           </div>
-          <div class="field">
-            <label for="signup-password">Password</label>
-            <input type="password" id="signup-password" placeholder="••••••••" required />
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width:100%; margin-top:0.5rem;" id="login-submit-btn">
+          <span>Sign In</span>
+        </button>
+      </form>
+
+      <!-- Signup Form -->
+      <form id="form-signup" style="display:none;">
+        <div class="form-group">
+          <label for="signup-username">Username</label>
+          <div class="input-wrapper">
+            <svg class="icon input-icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            <input type="text" id="signup-username" class="form-control" placeholder="alex_dev (min 6 chars)" minlength="6" required autocomplete="username" />
           </div>
-          <button type="submit" class="btn btn-primary">Create account</button>
-        </form>
+        </div>
+
+        <div class="form-group">
+          <label for="signup-email">Email Address</label>
+          <div class="input-wrapper">
+            <svg class="icon input-icon" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+            <input type="email" id="signup-email" class="form-control" placeholder="alex@example.com" required autocomplete="email" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="signup-password">Password</label>
+          <div class="input-wrapper">
+            <svg class="icon input-icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            <input type="password" id="signup-password" class="form-control" placeholder="••••••••" required autocomplete="new-password" />
+            <button type="button" class="toggle-pw-btn" data-target="signup-password" aria-label="Toggle password visibility">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width:100%; margin-top:0.5rem;" id="signup-submit-btn">
+          <span>Create Account</span>
+        </button>
+      </form>
+
+      <div class="demo-hint">
+        <svg class="icon" style="color:var(--accent-primary);" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+        <span>Authentication uses custom cryptographic manual JWT tokens (`python-jose`). Session tokens are stored securely per tab session.</span>
       </div>
     </section>
 
-    <!-- Notes dashboard -->
-    <section id="notes-view" class="panel" data-aos="fade-up" data-aos-duration="600">
-      <div class="notes-toolbar">
-        <span class="user-chip">Signed in as <strong id="display-user">demo@example.com</strong></span>
-        <div style="display:flex;gap:0.5rem;">
-          <button class="btn btn-ghost" id="new-note-btn">+ New note</button>
-          <button class="btn btn-ghost" id="logout-btn">Log out</button>
+    <!-- NOTES WORKSPACE (Logged In State) -->
+    <section id="workspace-section" style="display:none; flex-direction:column; flex:1;">
+      
+      <!-- TOP TOOLBAR (Search & Layout Toggle) -->
+      <div class="workspace-top-bar">
+        <div class="search-box-large">
+          <svg class="icon input-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <input type="text" id="search-input" class="form-control" placeholder="Search notes..." />
+          <button type="button" class="search-clear-btn" id="search-clear-btn" aria-label="Clear search filter">
+            <svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+        </div>
+
+        <div class="workspace-controls">
+          <div class="layout-toggle-group" role="tablist">
+            <button class="layout-toggle-btn active" id="layout-btn-grid" title="Keep Grid View">
+              <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+              <span>Grid</span>
+            </button>
+            <button class="layout-toggle-btn" id="layout-btn-split" title="Sidebar + Editor View">
+              <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
+              <span>Split Editor</span>
+            </button>
+          </div>
+
+          <button class="btn btn-primary" id="btn-top-create">
+            <svg class="icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            <span>New Note</span>
+          </button>
         </div>
       </div>
 
-      <div class="notes-layout">
-        <aside class="notes-list">
-          <h2>Your notes</h2>
-          <div id="notes-container"></div>
+      <!-- GOOGLE KEEP STYLE "TAKE A NOTE..." QUICK COMPOSER -->
+      <div id="keep-composer-container">
+        <div class="keep-composer" id="keep-composer">
+          <div class="composer-header">
+            <input type="text" id="composer-title" class="composer-title-input" placeholder="Take a note..." />
+            <button class="card-pin-btn" id="composer-pin-btn" title="Pin note">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+            </button>
+          </div>
+          
+          <textarea id="composer-body" class="composer-textarea" style="display:none;" placeholder="Write markdown content here..."></textarea>
+          
+          <div class="composer-footer" id="composer-footer" style="display:none;">
+            <div class="composer-color-picker">
+              <div class="color-dot-btn selected" style="background:#6366f1;" data-color="theme-default" title="Default Indigo"></div>
+              <div class="color-dot-btn" style="background:#f43f5e;" data-color="theme-coral" title="Coral"></div>
+              <div class="color-dot-btn" style="background:#f59e0b;" data-color="theme-amber" title="Amber"></div>
+              <div class="color-dot-btn" style="background:#10b981;" data-color="theme-mint" title="Mint"></div>
+              <div class="color-dot-btn" style="background:#06b6d4;" data-color="theme-cyan" title="Cyan"></div>
+              <div class="color-dot-btn" style="background:#a855f7;" data-color="theme-violet" title="Violet"></div>
+            </div>
+            
+            <div style="display:flex; gap:0.5rem;">
+              <button class="btn btn-secondary" id="composer-close-btn" style="padding:0.4rem 0.8rem; font-size:0.82rem;">Cancel</button>
+              <button class="btn btn-primary" id="composer-save-btn" style="padding:0.4rem 0.9rem; font-size:0.82rem;">Save Note</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- GOOGLE KEEP MASONRY GRID VIEW MODE -->
+      <div id="grid-view-container">
+        <!-- Pinned Section -->
+        <div id="pinned-section" style="display:none; margin-bottom:1.5rem;">
+          <div class="section-label">
+            <svg class="icon" style="color:var(--warning);" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+            <span>Pinned Notes</span>
+          </div>
+          <div class="notes-grid-view" id="pinned-grid"></div>
+        </div>
+
+        <!-- Others / All Section -->
+        <div id="others-section">
+          <div class="section-label" id="others-label">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path></svg>
+            <span>All Notes</span>
+          </div>
+          <div class="notes-grid-view" id="others-grid"></div>
+        </div>
+      </div>
+
+      <!-- SIDEBAR + EDITOR WORKSPACE MODE -->
+      <div id="split-view-container" class="split-workspace-layout" style="display:none;">
+        <aside class="sidebar glass-panel" id="app-sidebar">
+          <div style="padding:1.1rem; border-bottom:1px solid var(--border-glass); display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size:0.82rem; font-weight:700; color:var(--text-muted);" id="split-notes-count">0 Notes</span>
+            <button class="btn btn-primary" id="btn-split-new-note" style="padding:0.4rem 0.75rem; font-size:0.82rem;">+ New</button>
+          </div>
+          <div class="notes-list-scroll" id="sidebar-notes-list"></div>
         </aside>
 
-        <div class="note-editor">
-          <h2 id="editor-heading">Select or create a note</h2>
-          <div class="field">
-            <label for="note-title">Title</label>
-            <input type="text" id="note-title" placeholder="Note title" />
+        <!-- Note Editor Pane -->
+        <div class="editor-pane glass-panel">
+          <div class="editor-toolbar">
+            <input type="text" id="note-title-input" class="editor-title-input" placeholder="Note Title..." />
+            
+            <div style="display:flex; align-items:center; gap:0.6rem; flex-wrap:wrap;">
+              <span class="status-badge-save" id="save-status-badge">
+                <svg class="icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span id="save-status-text">Saved</span>
+              </span>
+
+              <div class="view-mode-tabs" role="tablist">
+                <button class="view-mode-btn active" id="view-mode-write" role="tab">Write</button>
+                <button class="view-mode-btn" id="view-mode-preview" role="tab">Preview</button>
+                <button class="view-mode-btn" id="view-mode-split" role="tab">Split</button>
+              </div>
+            </div>
           </div>
-          <div class="field">
-            <label for="note-content">Content</label>
-            <textarea id="note-content" placeholder="Write your note here..."></textarea>
+
+          <div class="editor-content-area" id="editor-content-area">
+            <textarea id="note-body-textarea" class="editor-textarea" placeholder="Write markdown content here..."></textarea>
+            <div id="markdown-preview" class="markdown-preview-pane" style="display:none;"></div>
           </div>
-          <div class="editor-actions">
-            <button class="btn btn-primary" id="save-note-btn" style="width:auto;">Save note</button>
-            <button class="btn btn-danger" id="delete-note-btn">Delete</button>
+
+          <div class="editor-footer">
+            <div style="display:flex; gap:0.8rem; font-size:0.78rem; color:var(--text-muted);">
+              <span id="stat-words">0 words</span>
+              <span>•</span>
+              <span id="stat-chars">0 characters</span>
+              <span>•</span>
+              <span id="stat-readtime">~1 min read</span>
+            </div>
+
+            <div style="display:flex; gap:0.5rem;">
+              <button class="btn btn-secondary" id="btn-copy-note" title="Copy note">Copy</button>
+              <button class="btn btn-danger" id="btn-delete-note" title="Delete note">Delete</button>
+              <button class="btn btn-primary" id="btn-save-note">Save Note</button>
+            </div>
           </div>
         </div>
       </div>
+
     </section>
+
+  </main>
+
+  <!-- ACCOUNT SETTINGS & DELETION MODAL -->
+  <div class="modal-backdrop" id="account-modal-backdrop">
+    <div class="modal-card glass-panel" role="dialog" aria-modal="true" aria-labelledby="modal-account-title">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modal-account-title">
+          <svg class="icon" style="color:var(--accent-primary);" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+          Account Settings
+        </h3>
+        <button class="btn btn-secondary btn-icon-only" id="close-account-modal" aria-label="Close modal">
+          <svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <div style="margin-bottom:1.25rem;">
+        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:0.25rem;">Signed in as</p>
+        <p style="font-weight:700; color:var(--text-main); font-size:1.05rem;" id="modal-user-email-text">user@example.com</p>
+      </div>
+
+      <div style="display:flex; gap:0.5rem; margin-bottom:1.5rem;">
+        <button class="btn btn-secondary" id="btn-logout" style="width:100%;">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+          <span>Log Out</span>
+        </button>
+      </div>
+
+      <div class="danger-box">
+        <h4>
+          <svg class="icon" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+          Danger Zone — Delete Account
+        </h4>
+        <p>Permanently delete your account and all associated notes from the database. This action cannot be undone.</p>
+        
+        <form id="form-delete-account">
+          <div class="form-group">
+            <label for="delete-confirm-text">Type <strong>DELETE</strong> to confirm</label>
+            <input type="text" id="delete-confirm-text" class="form-control" placeholder="DELETE" required autocomplete="off" />
+          </div>
+
+          <div class="form-group">
+            <label for="delete-confirm-password">Enter Password</label>
+            <input type="password" id="delete-confirm-password" class="form-control" placeholder="••••••••" required autocomplete="current-password" />
+          </div>
+
+          <button type="submit" class="btn btn-danger" style="width:100%;" id="btn-confirm-delete-account" disabled>
+            <span>Delete My Account</span>
+          </button>
+        </form>
+      </div>
+    </div>
   </div>
 
-  <div class="toast" id="toast"></div>
+  <!-- EDIT NOTE MODAL (For Keep Grid View double-click / edit) -->
+  <div class="modal-backdrop" id="edit-note-modal-backdrop">
+    <div class="modal-card glass-panel" style="max-width:680px;" role="dialog">
+      <div class="modal-header">
+        <input type="text" id="modal-note-title-input" class="editor-title-input" placeholder="Title..." />
+        <button class="btn btn-secondary btn-icon-only" id="close-edit-note-modal" aria-label="Close">
+          <svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
 
+      <textarea id="modal-note-body-textarea" class="editor-textarea" style="min-height:220px;" placeholder="Write content..."></textarea>
+
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-top:1rem; padding-top:0.75rem; border-top:1px solid var(--border-glass);">
+        <div style="display:flex; gap:0.4rem;" id="modal-color-picker">
+          <div class="color-dot-btn selected" style="background:#6366f1;" data-color="theme-default"></div>
+          <div class="color-dot-btn" style="background:#f43f5e;" data-color="theme-coral"></div>
+          <div class="color-dot-btn" style="background:#f59e0b;" data-color="theme-amber"></div>
+          <div class="color-dot-btn" style="background:#10b981;" data-color="theme-mint"></div>
+          <div class="color-dot-btn" style="background:#06b6d4;" data-color="theme-cyan"></div>
+          <div class="color-dot-btn" style="background:#a855f7;" data-color="theme-violet"></div>
+        </div>
+
+        <div style="display:flex; gap:0.5rem;">
+          <button class="btn btn-danger" id="modal-btn-delete-note">Delete</button>
+          <button class="btn btn-primary" id="modal-btn-save-note">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST CONTAINER -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- JAVASCRIPT LOGIC -->
   <script>
-    // Flip to true when you want the UI to call your FastAPI backend
-    const API_CONNECTED = true;
-    const API_BASE = "http://127.0.0.1:8000";
+    (function () {
+      'use strict';
 
-    const DEMO_NOTES = [
-      { id: 1, title: "Welcome", content: "This is a demo note. Your backend is ready at /signup, /login, /get_user_notes, /writeNote, /deleteNote." },
-      { id: 2, title: "FastAPI endpoints", content: "Login returns access_token. Protected routes need Authorization: Bearer <token>." },
-      { id: 3, title: "Next step", content: "Set API_CONNECTED = true in index.html to wire this UI to your API." },
-    ];
+      // Dynamic API Base URL
+      const API_BASE = window.API_BASE_URL ||
+        (window.location.origin.startsWith('file:') || window.location.origin.includes('localhost:5500') || window.location.origin.includes('127.0.0.1:5500')
+          ? 'http://127.0.0.1:8000'
+          : window.location.origin);
 
-    let notes = [...DEMO_NOTES];
-    let selectedNoteId = null;
-    let accessToken = null;
-    let currentUser = "demo@example.com";
+      const TOKEN_KEY = 'fastnote_access_token';
+      const USER_KEY = 'fastnote_user_email';
 
-    const authView = document.getElementById("auth-view");
-    const notesView = document.getElementById("notes-view");
-    const notesContainer = document.getElementById("notes-container");
-    const statusBadge = document.getElementById("connection-status");
-    const statusText = document.getElementById("status-text");
+      // State
+      const state = {
+        token: sessionStorage.getItem(TOKEN_KEY) || null,
+        userEmail: sessionStorage.getItem(USER_KEY) || null,
+        notes: [],
+        selectedNoteId: null,
+        searchQuery: '',
+        layoutMode: localStorage.getItem('fastnote_layout') || 'grid', // 'grid' or 'split'
+        pinnedIds: JSON.parse(localStorage.getItem('fastnote_pinned_ids') || '[]'),
+        colorMap: JSON.parse(localStorage.getItem('fastnote_color_map') || '{}'),
+        composerColor: 'theme-default',
+        modalColor: 'theme-default',
+        isDirty: false,
+        viewMode: 'write',
+        isLoadingNotes: false
+      };
 
-    function showToast(message) {
-      const toast = document.getElementById("toast");
-      toast.textContent = message;
-      toast.classList.add("show");
-      setTimeout(() => toast.classList.remove("show"), 2600);
-    }
+      // DOM Cache
+      const elements = {
+        authSection: document.getElementById('auth-section'),
+        workspaceSection: document.getElementById('workspace-section'),
+        tabLogin: document.getElementById('tab-login'),
+        tabSignup: document.getElementById('tab-signup'),
+        formLogin: document.getElementById('form-login'),
+        formSignup: document.getElementById('form-signup'),
+        loginEmail: document.getElementById('login-email'),
+        loginPassword: document.getElementById('login-password'),
+        signupUsername: document.getElementById('signup-username'),
+        signupEmail: document.getElementById('signup-email'),
+        signupPassword: document.getElementById('signup-password'),
+        userProfileMenu: document.getElementById('user-profile-menu'),
+        navUserEmail: document.getElementById('nav-user-email'),
+        accountSettingsBtn: document.getElementById('account-settings-btn'),
+        accountModalBackdrop: document.getElementById('account-modal-backdrop'),
+        closeAccountModal: document.getElementById('close-account-modal'),
+        modalUserEmailText: document.getElementById('modal-user-email-text'),
+        formDeleteAccount: document.getElementById('form-delete-account'),
+        deleteConfirmText: document.getElementById('delete-confirm-text'),
+        deleteConfirmPassword: document.getElementById('delete-confirm-password'),
+        btnConfirmDeleteAccount: document.getElementById('btn-confirm-delete-account'),
+        btnLogout: document.getElementById('btn-logout'),
 
-    function updateConnectionBadge() {
-      if (API_CONNECTED) {
-        statusBadge.classList.add("connected");
-        statusText.textContent = "Connected to backend";
-      } else {
-        statusBadge.classList.remove("connected");
-        statusText.textContent = "Demo mode — backend not connected";
-      }
-    }
+        // Layout elements
+        searchInput: document.getElementById('search-input'),
+        searchClearBtn: document.getElementById('search-clear-btn'),
+        layoutBtnGrid: document.getElementById('layout-btn-grid'),
+        layoutBtnSplit: document.getElementById('layout-btn-split'),
+        btnTopCreate: document.getElementById('btn-top-create'),
 
-    function showNotesView(email) {
-      currentUser = email;
-      document.getElementById("display-user").textContent = email;
-      authView.style.display = "none";
-      notesView.style.display = "block";
-      renderNotes();
-    }
+        // Keep Composer
+        keepComposer: document.getElementById('keep-composer'),
+        composerTitle: document.getElementById('composer-title'),
+        composerBody: document.getElementById('composer-body'),
+        composerFooter: document.getElementById('composer-footer'),
+        composerPinBtn: document.getElementById('composer-pin-btn'),
+        composerSaveBtn: document.getElementById('composer-save-btn'),
+        composerCloseBtn: document.getElementById('composer-close-btn'),
 
-    function showAuthView() {
-      accessToken = null;
-      authView.style.display = "block";
-      notesView.style.display = "none";
-    }
+        // Grid View
+        gridViewContainer: document.getElementById('grid-view-container'),
+        pinnedSection: document.getElementById('pinned-section'),
+        pinnedGrid: document.getElementById('pinned-grid'),
+        othersGrid: document.getElementById('others-grid'),
+        othersLabel: document.getElementById('others-label'),
 
-    function renderNotes() {
-      notesContainer.innerHTML = "";
-      if (notes.length === 0) {
-        notesContainer.innerHTML = '<div class="empty-state">No notes yet. Click "+ New note" to add one.</div>';
-        return;
-      }
+        // Split Editor View
+        splitViewContainer: document.getElementById('split-view-container'),
+        sidebarNotesList: document.getElementById('sidebar-notes-list'),
+        splitNotesCount: document.getElementById('split-notes-count'),
+        btnSplitNewNote: document.getElementById('btn-split-new-note'),
+        noteTitleInput: document.getElementById('note-title-input'),
+        noteBodyTextarea: document.getElementById('note-body-textarea'),
+        markdownPreview: document.getElementById('markdown-preview'),
+        editorContentArea: document.getElementById('editor-content-area'),
+        viewModeWrite: document.getElementById('view-mode-write'),
+        viewModePreview: document.getElementById('view-mode-preview'),
+        viewModeSplit: document.getElementById('view-mode-split'),
+        saveStatusBadge: document.getElementById('save-status-badge'),
+        saveStatusText: document.getElementById('save-status-text'),
+        statWords: document.getElementById('stat-words'),
+        statChars: document.getElementById('stat-chars'),
+        statReadtime: document.getElementById('stat-readtime'),
+        btnSaveNote: document.getElementById('btn-save-note'),
+        btnDeleteNote: document.getElementById('btn-delete-note'),
+        btnCopyNote: document.getElementById('btn-copy-note'),
 
-      notes.forEach((note) => {
-        const card = document.createElement("div");
-        card.className = "note-card" + (note.id === selectedNoteId ? " selected" : "");
-        card.innerHTML = `<h3>${escapeHtml(note.title)}</h3><p>${escapeHtml(note.content)}</p>`;
-        card.addEventListener("click", () => selectNote(note.id));
-        notesContainer.appendChild(card);
-      });
-    }
+        // Modal Note Edit
+        editNoteModalBackdrop: document.getElementById('edit-note-modal-backdrop'),
+        closeEditNoteModal: document.getElementById('close-edit-note-modal'),
+        modalNoteTitleInput: document.getElementById('modal-note-title-input'),
+        modalNoteBodyTextarea: document.getElementById('modal-note-body-textarea'),
+        modalBtnSaveNote: document.getElementById('modal-btn-save-note'),
+        modalBtnDeleteNote: document.getElementById('modal-btn-delete-note'),
 
-    function selectNote(id) {
-      selectedNoteId = id;
-      const note = notes.find((n) => n.id === id);
-      if (!note) return;
-      document.getElementById("editor-heading").textContent = "Edit note";
-      document.getElementById("note-title").value = note.title;
-      document.getElementById("note-content").value = note.content;
-      renderNotes();
-    }
+        toastContainer: document.getElementById('toast-container'),
+        statusDot: document.getElementById('status-dot'),
+        statusText: document.getElementById('status-text'),
+        mobileDrawerToggle: document.getElementById('mobile-drawer-toggle'),
+        appSidebar: document.getElementById('app-sidebar')
+      };
 
-    function clearEditor() {
-      selectedNoteId = null;
-      document.getElementById("editor-heading").textContent = "New note";
-      document.getElementById("note-title").value = "";
-      document.getElementById("note-content").value = "";
-      renderNotes();
-    }
+      // Toast Notifications
+      function showToast(message, type = 'info') {
+        const toast = document.createElement('div');
+        toast.className = `toast-item ${type}`;
 
-    function escapeHtml(text) {
-      const div = document.createElement("div");
-      div.textContent = text;
-      return div.innerHTML;
-    }
-
-    async function apiFetch(path, options = {}) {
-      const headers = { "Content-Type": "application/json", ...(options.headers || {}) };
-      if (accessToken) headers["Authorization"] = `Bearer ${accessToken}`;
-      const res = await fetch(`${API_BASE}${path}`, { ...options, headers });
-      return res.json();
-    }
-
-    // Tabs
-    document.querySelectorAll(".tab").forEach((tab) => {
-      tab.addEventListener("click", () => {
-        document.querySelectorAll(".tab").forEach((t) => t.classList.remove("active"));
-        document.querySelectorAll(".tab-content").forEach((c) => c.classList.remove("active"));
-        tab.classList.add("active");
-        document.getElementById(`${tab.dataset.tab}-tab`).classList.add("active");
-      });
-    });
-
-    // Login
-    document.getElementById("login-form").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const mail = document.getElementById("login-email").value.trim();
-      const password = document.getElementById("login-password").value;
-
-      if (!API_CONNECTED) {
-        showToast("Demo login — showing sample notes");
-        showNotesView(mail);
-        return;
-      }
-
-      try {
-        const data = await apiFetch("/login", {
-          method: "POST",
-          body: JSON.stringify({ mail, password }),
-        });
-        if (data.access_token) {
-          accessToken = data.access_token;
-          showNotesView(mail);
-          const fetched = await apiFetch("/get_user_notes");
-          notes = Array.isArray(fetched) ? fetched : [];
-          selectedNoteId = null;
-          renderNotes();
-          showToast("Logged in successfully");
-        } else {
-          showToast(data.msg || "Login failed");
+        let iconSvg = '<svg class="icon toast-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>';
+        if (type === 'success') {
+          iconSvg = '<svg class="icon toast-icon" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>';
+        } else if (type === 'error') {
+          iconSvg = '<svg class="icon toast-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>';
         }
-      } catch {
-        showToast("Could not reach backend");
-      }
-    });
 
-    // Signup
-    document.getElementById("signup-form").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const username = document.getElementById("signup-username").value.trim();
-      const mail = document.getElementById("signup-email").value.trim();
-      const password = document.getElementById("signup-password").value;
+        toast.innerHTML = `${iconSvg}<span>${escapeHtml(message)}</span>`;
+        elements.toastContainer.appendChild(toast);
 
-      if (!API_CONNECTED) {
-        showToast("Demo signup — switch to Login to continue");
-        document.querySelector('.tab[data-tab="login"]').click();
-        return;
+        setTimeout(() => {
+          toast.style.opacity = '0';
+          toast.style.transform = 'translateY(10px)';
+          setTimeout(() => toast.remove(), 300);
+        }, 3200);
       }
 
-      try {
-        const data = await apiFetch("/signup", {
-          method: "POST",
-          body: JSON.stringify({ username, mail, password }),
-        });
-        showToast(data.msg || "Account created — please log in");
-        document.querySelector('.tab[data-tab="login"]').click();
-      } catch {
-        showToast("Could not reach backend");
-      }
-    });
-
-    // New note
-    document.getElementById("new-note-btn").addEventListener("click", clearEditor);
-
-    // Save note
-    document.getElementById("save-note-btn").addEventListener("click", async () => {
-      const title = document.getElementById("note-title").value.trim();
-      const content = document.getElementById("note-content").value.trim();
-      if (!title || !content) {
-        showToast("Title and content are required");
-        return;
+      function escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
       }
 
-      if (!API_CONNECTED) {
-        if (selectedNoteId) {
-          const note = notes.find((n) => n.id === selectedNoteId);
-          if (note) { note.title = title; note.content = content; }
-          showToast("Demo: note updated locally");
-        } else {
-          notes.unshift({ id: Date.now(), title, content });
-          showToast("Demo: note saved locally");
+      function renderSanitizedMarkdown(text) {
+        if (!text) return '<p style="color:var(--text-muted); italic">No content to preview.</p>';
+        try {
+          const rawHtml = window.marked ? window.marked.parse(text) : escapeHtml(text);
+          return window.DOMPurify ? window.DOMPurify.sanitize(rawHtml) : rawHtml;
+        } catch (e) {
+          return escapeHtml(text);
         }
-        renderNotes();
-        return;
       }
 
-      try {
-        const data = await apiFetch("/writeNote", {
-          method: "POST",
-          body: JSON.stringify({ title, content }),
+      // API Helper
+      async function apiFetch(endpoint, options = {}) {
+        const headers = {
+          'Content-Type': 'application/json',
+          ...(options.headers || {})
+        };
+
+        if (state.token) {
+          headers['Authorization'] = `Bearer ${state.token}`;
+        }
+
+        try {
+          const response = await fetch(`${API_BASE}${endpoint}`, {
+            ...options,
+            headers
+          });
+
+          let data;
+          const contentType = response.headers.get('content-type');
+          if (contentType && contentType.includes('application/json')) {
+            data = await response.json();
+          } else {
+            const rawText = await response.text();
+            data = { detail: rawText.length < 100 ? rawText : `Server error (${response.status})` };
+          }
+
+          if (response.status === 401) {
+            if (state.token) {
+              showToast('Session expired. Please sign in again.', 'error');
+              handleLogout();
+            }
+            throw new Error(data.detail || 'Unauthorized');
+          }
+
+          if (!response.ok) {
+            throw new Error(data.detail || data.msg || `Server error (${response.status})`);
+          }
+
+          return data;
+        } catch (err) {
+          throw err;
+        }
+      }
+
+      async function checkServerHealth() {
+        try {
+          await fetch(`${API_BASE}/`, { method: 'HEAD' });
+          elements.statusDot.classList.remove('offline');
+          elements.statusText.textContent = 'Connected';
+        } catch (e) {
+          elements.statusDot.classList.add('offline');
+          elements.statusText.textContent = 'Offline Mode';
+        }
+      }
+
+      function updateView() {
+        if (state.token && state.userEmail) {
+          elements.authSection.style.display = 'none';
+          elements.workspaceSection.style.display = 'flex';
+          elements.userProfileMenu.style.display = 'block';
+          elements.navUserEmail.textContent = state.userEmail;
+          elements.modalUserEmailText.textContent = state.userEmail;
+          fetchNotes();
+        } else {
+          elements.authSection.style.display = 'block';
+          elements.workspaceSection.style.display = 'none';
+          elements.userProfileMenu.style.display = 'none';
+        }
+      }
+
+      // Auth Submits
+      async function handleLogin(e) {
+        e.preventDefault();
+        const mail = elements.loginEmail.value.trim();
+        const password = elements.loginPassword.value;
+
+        try {
+          const data = await apiFetch('/login', {
+            method: 'POST',
+            body: JSON.stringify({ mail, password })
+          });
+
+          if (data.access_token) {
+            state.token = data.access_token;
+            state.userEmail = mail;
+            sessionStorage.setItem(TOKEN_KEY, data.access_token);
+            sessionStorage.setItem(USER_KEY, mail);
+            showToast('Signed in successfully', 'success');
+            updateView();
+          }
+        } catch (err) {
+          showToast(err.message || 'Login failed', 'error');
+        }
+      }
+
+      async function handleSignup(e) {
+        e.preventDefault();
+        const username = elements.signupUsername.value.trim();
+        const mail = elements.signupEmail.value.trim();
+        const password = elements.signupPassword.value;
+
+        try {
+          const data = await apiFetch('/signup', {
+            method: 'POST',
+            body: JSON.stringify({ username, mail, password })
+          });
+
+          showToast(data.msg || 'Account created! Please sign in.', 'success');
+          elements.tabLogin.click();
+          elements.loginEmail.value = mail;
+        } catch (err) {
+          showToast(err.message || 'Signup failed', 'error');
+        }
+      }
+
+      function handleLogout() {
+        state.token = null;
+        state.userEmail = null;
+        state.notes = [];
+        state.selectedNoteId = null;
+        sessionStorage.removeItem(TOKEN_KEY);
+        sessionStorage.removeItem(USER_KEY);
+        updateView();
+        showToast('Signed out', 'info');
+      }
+
+      // Fetch Notes
+      async function fetchNotes() {
+        state.isLoadingNotes = true;
+        renderWorkspace();
+
+        try {
+          const res = await apiFetch('/get_user_notes');
+          state.notes = Array.isArray(res) ? res : [];
+          state.isLoadingNotes = false;
+          renderWorkspace();
+
+          if (state.notes.length > 0 && !state.selectedNoteId) {
+            selectNote(state.notes[0].id);
+          }
+        } catch (err) {
+          state.isLoadingNotes = false;
+          renderWorkspace();
+          showToast('Could not load notes', 'error');
+        }
+      }
+
+      // Save Note
+      async function saveNote(title, content, colorTheme = 'theme-default', isPinned = false) {
+        if (!title) {
+          showToast('Note title is required', 'error');
+          return false;
+        }
+
+        try {
+          const data = await apiFetch('/writeNote', {
+            method: 'POST',
+            body: JSON.stringify({ title, content })
+          });
+
+          showToast(data.msg || 'Note saved successfully', 'success');
+          
+          // Save color & pinned preferences
+          if (colorTheme) state.colorMap[title] = colorTheme;
+          if (isPinned && !state.pinnedIds.includes(title)) {
+            state.pinnedIds.push(title);
+          } else if (!isPinned && state.pinnedIds.includes(title)) {
+            state.pinnedIds = state.pinnedIds.filter(t => t !== title);
+          }
+
+          localStorage.setItem('fastnote_color_map', JSON.stringify(state.colorMap));
+          localStorage.setItem('fastnote_pinned_ids', JSON.stringify(state.pinnedIds));
+
+          await fetchNotes();
+          return true;
+        } catch (err) {
+          showToast(err.message || 'Failed to save note', 'error');
+          return false;
+        }
+      }
+
+      async function deleteNoteByTitle(title) {
+        if (!title) return;
+        if (!confirm(`Are you sure you want to delete "${title}"?`)) return;
+
+        try {
+          const data = await apiFetch('/deleteNote', {
+            method: 'DELETE',
+            body: JSON.stringify({ title })
+          });
+
+          showToast(data.msg || 'Note deleted', 'info');
+          state.notes = state.notes.filter(n => n.title !== title);
+          delete state.colorMap[title];
+          state.pinnedIds = state.pinnedIds.filter(t => t !== title);
+          localStorage.setItem('fastnote_color_map', JSON.stringify(state.colorMap));
+          localStorage.setItem('fastnote_pinned_ids', JSON.stringify(state.pinnedIds));
+          
+          renderWorkspace();
+        } catch (err) {
+          showToast(err.message || 'Could not delete note', 'error');
+        }
+      }
+
+      // RENDER WORKSPACE (GRID vs SPLIT)
+      function renderWorkspace() {
+        if (state.layoutMode === 'grid') {
+          elements.gridViewContainer.style.display = 'block';
+          elements.splitViewContainer.style.display = 'none';
+          elements.keepComposer.style.display = 'block';
+          elements.layoutBtnGrid.classList.add('active');
+          elements.layoutBtnSplit.classList.remove('active');
+          renderKeepGrid();
+        } else {
+          elements.gridViewContainer.style.display = 'none';
+          elements.splitViewContainer.style.display = 'grid';
+          elements.keepComposer.style.display = 'none';
+          elements.layoutBtnSplit.classList.add('active');
+          elements.layoutBtnGrid.classList.remove('active');
+          renderSplitSidebar();
+        }
+      }
+
+      // Render Google Keep Grid
+      function renderKeepGrid() {
+        const pinnedGrid = elements.pinnedGrid;
+        const othersGrid = elements.othersGrid;
+        pinnedGrid.innerHTML = '';
+        othersGrid.innerHTML = '';
+
+        if (state.isLoadingNotes) {
+          othersGrid.innerHTML = `
+            <div class="skeleton-card"></div>
+            <div class="skeleton-card"></div>
+            <div class="skeleton-card"></div>
+          `;
+          return;
+        }
+
+        const filtered = state.notes.filter(n => {
+          if (!state.searchQuery) return true;
+          const q = state.searchQuery.toLowerCase();
+          return n.title.toLowerCase().includes(q) || n.content.toLowerCase().includes(q);
         });
-        showToast(data.msg || "Note saved");
-        const fetched = await apiFetch("/get_user_notes");
-        notes = Array.isArray(fetched) ? fetched : notes;
-        renderNotes();
-      } catch {
-        showToast("Could not save note");
-      }
-    });
 
-    // Delete note
-    document.getElementById("delete-note-btn").addEventListener("click", async () => {
-      const title = document.getElementById("note-title").value.trim();
-      if (!title) {
-        showToast("Select a note to delete");
-        return;
+        if (filtered.length === 0) {
+          elements.pinnedSection.style.display = 'none';
+          othersGrid.innerHTML = `
+            <div class="empty-state-box" style="grid-column: 1 / -1;">
+              <svg class="icon empty-state-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path></svg>
+              <p>${state.searchQuery ? 'No notes match your search' : 'Notes you add appear here'}</p>
+            </div>
+          `;
+          return;
+        }
+
+        const pinnedNotes = filtered.filter(n => state.pinnedIds.includes(n.title));
+        const otherNotes = filtered.filter(n => !state.pinnedIds.includes(n.title));
+
+        if (pinnedNotes.length > 0) {
+          elements.pinnedSection.style.display = 'block';
+          pinnedNotes.forEach(n => pinnedGrid.appendChild(createKeepCardElement(n, true)));
+        } else {
+          elements.pinnedSection.style.display = 'none';
+        }
+
+        elements.othersLabel.style.display = pinnedNotes.length > 0 ? 'flex' : 'none';
+        otherNotes.forEach(n => othersGrid.appendChild(createKeepCardElement(n, false)));
       }
 
-      if (!API_CONNECTED) {
-        notes = notes.filter((n) => n.id !== selectedNoteId);
-        clearEditor();
-        showToast("Demo: note deleted locally");
-        return;
-      }
+      function createKeepCardElement(note, isPinned) {
+        const card = document.createElement('div');
+        const colorTheme = state.colorMap[note.title] || 'theme-default';
+        card.className = `keep-card ${colorTheme} ${isPinned ? 'pinned' : ''}`;
 
-      try {
-        const data = await apiFetch("/deleteNote", {
-          method: "DELETE",
-          body: JSON.stringify({ title }),
+        let titleHtml = escapeHtml(note.title);
+        let snippetHtml = escapeHtml(note.content || '');
+
+        if (state.searchQuery) {
+          const regex = new RegExp(`(${state.searchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+          titleHtml = titleHtml.replace(regex, '<mark class="highlight-match">$1</mark>');
+          snippetHtml = snippetHtml.replace(regex, '<mark class="highlight-match">$1</mark>');
+        }
+
+        card.innerHTML = `
+          <div>
+            <div class="card-top-row">
+              <h3 class="card-title">${titleHtml}</h3>
+              <button class="card-pin-btn ${isPinned ? 'active' : ''}" title="${isPinned ? 'Unpin' : 'Pin note'}">
+                <svg class="icon" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+              </button>
+            </div>
+            <div class="card-snippet">${snippetHtml}</div>
+          </div>
+          <div class="card-footer">
+            <span>${note.content ? Math.ceil(note.content.split(/\s+/).length / 200) + ' min read' : 'Empty'}</span>
+            <div class="card-actions-hover">
+              <button class="card-action-icon-btn btn-copy" title="Copy text">
+                <svg class="icon" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+              </button>
+              <button class="card-action-icon-btn btn-delete" title="Delete note">
+                <svg class="icon" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+              </button>
+            </div>
+          </div>
+        `;
+
+        // Card Click opens Edit Modal
+        card.addEventListener('click', (e) => {
+          if (e.target.closest('.card-pin-btn') || e.target.closest('.btn-copy') || e.target.closest('.btn-delete')) return;
+          openEditModal(note);
         });
-        showToast(data.msg || "Note deleted");
-        notes = notes.filter((n) => n.title !== title);
-        clearEditor();
-      } catch {
-        showToast("Could not delete note");
+
+        // Pin button
+        card.querySelector('.card-pin-btn').addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (isPinned) {
+            state.pinnedIds = state.pinnedIds.filter(t => t !== note.title);
+          } else {
+            state.pinnedIds.push(note.title);
+          }
+          localStorage.setItem('fastnote_pinned_ids', JSON.stringify(state.pinnedIds));
+          renderKeepGrid();
+        });
+
+        // Copy button
+        card.querySelector('.btn-copy').addEventListener('click', (e) => {
+          e.stopPropagation();
+          navigator.clipboard.writeText(note.content)
+            .then(() => showToast('Copied content', 'success'))
+            .catch(() => showToast('Failed to copy', 'error'));
+        });
+
+        // Delete button
+        card.querySelector('.btn-delete').addEventListener('click', (e) => {
+          e.stopPropagation();
+          deleteNoteByTitle(note.title);
+        });
+
+        return card;
       }
-    });
 
-    // Logout
-    document.getElementById("logout-btn").addEventListener("click", () => {
-      notes = [...DEMO_NOTES];
-      selectedNoteId = null;
-      showAuthView();
-      showToast("Logged out");
-    });
+      // Render Split Sidebar
+      function renderSplitSidebar() {
+        const container = elements.sidebarNotesList;
+        container.innerHTML = '';
 
-    updateConnectionBadge();
-  </script>
-  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-  <script>
-    AOS.init({
-      duration: 800,
-      once: true,
-      easing: 'ease-out-back',
-    });
+        const filtered = state.notes.filter(n => {
+          if (!state.searchQuery) return true;
+          const q = state.searchQuery.toLowerCase();
+          return n.title.toLowerCase().includes(q) || n.content.toLowerCase().includes(q);
+        });
+
+        elements.splitNotesCount.textContent = `${filtered.length} Notes`;
+
+        filtered.forEach(note => {
+          const item = document.createElement('div');
+          item.className = `note-item ${note.id === state.selectedNoteId ? 'active' : ''}`;
+          item.innerHTML = `
+            <div class="note-item-title">${escapeHtml(note.title)}</div>
+            <div class="note-item-snippet">${escapeHtml(note.content || 'No text')}</div>
+          `;
+          item.addEventListener('click', () => selectNote(note.id));
+          container.appendChild(item);
+        });
+      }
+
+      function selectNote(noteId) {
+        state.selectedNoteId = noteId;
+        const note = state.notes.find(n => n.id === noteId);
+        if (!note) return;
+
+        elements.noteTitleInput.value = note.title;
+        elements.noteBodyTextarea.value = note.content;
+        updateStats();
+        updateMarkdownPreview();
+        renderWorkspace();
+      }
+
+      function updateStats() {
+        const text = elements.noteBodyTextarea.value || '';
+        const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+        const chars = text.length;
+        const readTime = Math.max(1, Math.ceil(words / 200));
+
+        elements.statWords.textContent = `${words} words`;
+        elements.statChars.textContent = `${chars} characters`;
+        elements.statReadtime.textContent = `~${readTime} min read`;
+      }
+
+      function updateMarkdownPreview() {
+        elements.markdownPreview.innerHTML = renderSanitizedMarkdown(elements.noteBodyTextarea.value);
+      }
+
+      // EDIT MODAL HANDLER
+      let activeEditNoteTitle = null;
+
+      function openEditModal(note) {
+        activeEditNoteTitle = note.title;
+        elements.modalNoteTitleInput.value = note.title;
+        elements.modalNoteBodyTextarea.value = note.content;
+        state.modalColor = state.colorMap[note.title] || 'theme-default';
+
+        // Highlight selected color dot
+        document.querySelectorAll('#modal-color-picker .color-dot-btn').forEach(btn => {
+          btn.classList.toggle('selected', btn.dataset.color === state.modalColor);
+        });
+
+        elements.editNoteModalBackdrop.classList.add('open');
+      }
+
+      function closeEditModal() {
+        elements.editNoteModalBackdrop.classList.remove('open');
+      }
+
+      // Quick Composer Expand/Collapse
+      function expandComposer() {
+        elements.keepComposer.classList.add('expanded');
+        elements.composerBody.style.display = 'block';
+        elements.composerFooter.style.display = 'flex';
+      }
+
+      function collapseComposer() {
+        elements.keepComposer.classList.remove('expanded');
+        elements.composerTitle.value = '';
+        elements.composerBody.value = '';
+        elements.composerBody.style.display = 'none';
+        elements.composerFooter.style.display = 'none';
+      }
+
+      // Event Binding
+      function bindEvents() {
+        // Auth Tabs
+        elements.tabLogin.addEventListener('click', () => {
+          elements.tabLogin.classList.add('active');
+          elements.tabSignup.classList.remove('active');
+          elements.formLogin.style.display = 'block';
+          elements.formSignup.style.display = 'none';
+        });
+
+        elements.tabSignup.addEventListener('click', () => {
+          elements.tabSignup.classList.add('active');
+          elements.tabLogin.classList.remove('active');
+          elements.formSignup.style.display = 'block';
+          elements.formLogin.style.display = 'none';
+        });
+
+        elements.formLogin.addEventListener('submit', handleLogin);
+        elements.formSignup.addEventListener('submit', handleSignup);
+
+        document.querySelectorAll('.toggle-pw-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const input = document.getElementById(btn.dataset.target);
+            if (input) input.type = input.type === 'password' ? 'text' : 'password';
+          });
+        });
+
+        // Layout Toggles
+        elements.layoutBtnGrid.addEventListener('click', () => {
+          state.layoutMode = 'grid';
+          localStorage.setItem('fastnote_layout', 'grid');
+          renderWorkspace();
+        });
+
+        elements.layoutBtnSplit.addEventListener('click', () => {
+          state.layoutMode = 'split';
+          localStorage.setItem('fastnote_layout', 'split');
+          renderWorkspace();
+        });
+
+        // Search Box
+        elements.searchInput.addEventListener('input', (e) => {
+          state.searchQuery = e.target.value.trim();
+          elements.searchClearBtn.classList.toggle('visible', !!state.searchQuery);
+          renderWorkspace();
+        });
+
+        elements.searchClearBtn.addEventListener('click', () => {
+          elements.searchInput.value = '';
+          state.searchQuery = '';
+          elements.searchClearBtn.classList.remove('visible');
+          renderWorkspace();
+        });
+
+        // Keep Composer Events
+        elements.composerTitle.addEventListener('focus', expandComposer);
+        elements.composerCloseBtn.addEventListener('click', collapseComposer);
+
+        document.querySelectorAll('.composer-color-picker .color-dot-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            document.querySelectorAll('.composer-color-picker .color-dot-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            state.composerColor = btn.dataset.color;
+          });
+        });
+
+        elements.composerSaveBtn.addEventListener('click', async () => {
+          const title = elements.composerTitle.value.trim();
+          const content = elements.composerBody.value.trim();
+          const isPinned = elements.composerPinBtn.classList.contains('active');
+
+          const ok = await saveNote(title, content, state.composerColor, isPinned);
+          if (ok) collapseComposer();
+        });
+
+        elements.composerPinBtn.addEventListener('click', () => {
+          elements.composerPinBtn.classList.toggle('active');
+        });
+
+        // Modal Note Edit Events
+        elements.closeEditNoteModal.addEventListener('click', closeEditModal);
+
+        document.querySelectorAll('#modal-color-picker .color-dot-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            document.querySelectorAll('#modal-color-picker .color-dot-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            state.modalColor = btn.dataset.color;
+          });
+        });
+
+        elements.modalBtnSaveNote.addEventListener('click', async () => {
+          const title = elements.modalNoteTitleInput.value.trim();
+          const content = elements.modalNoteBodyTextarea.value.trim();
+          const isPinned = state.pinnedIds.includes(activeEditNoteTitle);
+
+          const ok = await saveNote(title, content, state.modalColor, isPinned);
+          if (ok) closeEditModal();
+        });
+
+        elements.modalBtnDeleteNote.addEventListener('click', async () => {
+          closeEditModal();
+          deleteNoteByTitle(activeEditNoteTitle);
+        });
+
+        // Split Editor Actions
+        elements.btnSaveNote.addEventListener('click', () => {
+          saveNote(elements.noteTitleInput.value.trim(), elements.noteBodyTextarea.value.trim());
+        });
+
+        elements.btnDeleteNote.addEventListener('click', () => {
+          deleteNoteByTitle(elements.noteTitleInput.value.trim());
+        });
+
+        elements.btnCopyNote.addEventListener('click', () => {
+          navigator.clipboard.writeText(elements.noteBodyTextarea.value)
+            .then(() => showToast('Copied content to clipboard', 'success'));
+        });
+
+        elements.btnTopCreate.addEventListener('click', () => {
+          if (state.layoutMode === 'grid') {
+            expandComposer();
+            elements.composerTitle.focus();
+          } else {
+            elements.noteTitleInput.value = '';
+            elements.noteBodyTextarea.value = '';
+            elements.noteTitleInput.focus();
+          }
+        });
+
+        elements.btnSplitNewNote.addEventListener('click', () => {
+          elements.noteTitleInput.value = '';
+          elements.noteBodyTextarea.value = '';
+          elements.noteTitleInput.focus();
+        });
+
+        elements.noteBodyTextarea.addEventListener('input', () => {
+          updateStats();
+          if (state.viewMode !== 'write') updateMarkdownPreview();
+        });
+
+        // Account Settings
+        elements.accountSettingsBtn.addEventListener('click', () => {
+          elements.deleteConfirmText.value = '';
+          elements.deleteConfirmPassword.value = '';
+          elements.btnConfirmDeleteAccount.disabled = true;
+          elements.accountModalBackdrop.classList.add('open');
+        });
+
+        elements.closeAccountModal.addEventListener('click', () => elements.accountModalBackdrop.classList.remove('open'));
+        elements.btnLogout.addEventListener('click', () => {
+          elements.accountModalBackdrop.classList.remove('open');
+          handleLogout();
+        });
+
+        function checkDeleteEnable() {
+          const txt = elements.deleteConfirmText.value.trim();
+          const pw = elements.deleteConfirmPassword.value;
+          elements.btnConfirmDeleteAccount.disabled = !(txt === 'DELETE' && pw.length > 0);
+        }
+
+        elements.deleteConfirmText.addEventListener('input', checkDeleteEnable);
+        elements.deleteConfirmPassword.addEventListener('input', checkDeleteEnable);
+
+        elements.formDeleteAccount.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          try {
+            const data = await apiFetch('/delete', {
+              method: 'DELETE',
+              body: JSON.stringify({ password: elements.deleteConfirmPassword.value })
+            });
+            showToast(data.msg || 'Account deleted', 'info');
+            elements.accountModalBackdrop.classList.remove('open');
+            handleLogout();
+          } catch (err) {
+            showToast(err.message || 'Account deletion failed', 'error');
+          }
+        });
+
+        // Shortcuts
+        window.addEventListener('keydown', (e) => {
+          if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+            e.preventDefault();
+            if (state.token && state.layoutMode === 'split') {
+              saveNote(elements.noteTitleInput.value.trim(), elements.noteBodyTextarea.value.trim());
+            }
+          } else if (e.key === 'Escape') {
+            elements.accountModalBackdrop.classList.remove('open');
+            closeEditModal();
+          }
+        });
+      }
+
+      function init() {
+        checkServerHealth();
+        bindEvents();
+        updateView();
+      }
+
+      init();
+    })();
   </script>
 </body>
 </html>

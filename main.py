@@ -9,7 +9,6 @@ from JWT_manual_auth_depends import get_current_user
 from sqlalchemy import select
 
 
-from jose import jwt 
 from datetime import datetime , timedelta
 from Token import SECRET_KEY , ALGORITH
 
@@ -19,12 +18,17 @@ from fastapi.responses import FileResponse
 from pathlib import Path
 from fastapi.middleware.cors import CORSMiddleware
 
-app = FastAPI()
+import os
 
-# Enable CORS so the frontend can connect from other origins (like Live Server or local files)
+app = FastAPI(title="Notes API - Manual JWT", description="FastAPI backend with manually implemented JWT auth")
+
+# Enable CORS (defaults to "*", can be overridden via CORS_ORIGINS env var in production)
+cors_origins_raw = os.getenv("CORS_ORIGINS", "*")
+cors_origins = [origin.strip() for origin in cors_origins_raw.split(",") if origin.strip()]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

@@ -2,7 +2,6 @@ from engine import session
 from passlib.context import CryptContext
 from JWTmodels import Users
 from sqlalchemy import select
-from jose import jwt , JWTError
 from Token import ALGORITH , SECRET_KEY 
 from fastapi import HTTPException
 from Logs.zlogger import logger
