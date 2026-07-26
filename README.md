@@ -33,7 +33,7 @@ Designed for security, speed, and portfolio presentation, this project demonstra
 - Highlights matching search queries inline with match counter feedback.
 
 ### 🛡️ Manual JWT Security & Session Management
-- **Manual Signature Construction**: Custom token builder using `python-jose` with HMAC-SHA256 (`HS256`), subscriber (`sub`), issued-at (`iat`), and 10-minute expiration (`exp`) claims.
+- **Manual Signature Construction**: Custom token builder using Python standard libraries (`hmac` and `hashlib`) with HMAC-SHA256 (`HS256`), subscriber (`sub`), issued-at (`iat`), and 10-minute expiration (`exp`) claims.
 - **FastAPI Dependency Injection**: Auth verification performed inside `get_current_user` dependency, validating HTTP `Authorization: Bearer <token>` headers without high-level library abstractions.
 - **Tab-Scoped Session Security**: Tokens stored safely in `sessionStorage` (cleared on tab close).
 - **Two-Step Account Deletion**: Modal requires typing `DELETE` + password verification to invoke `DELETE /delete`.
@@ -121,30 +121,40 @@ CORS_ORIGINS=*
 
 ## 🚀 Installation & Local Development
 
-### 1. Clone & Navigate
+Follow these simple steps to set up and run the application locally on your laptop:
+
+### 1. Clone the Repository & Navigate
+Open your terminal or command prompt and clone the repository:
 ```bash
-git clone https://github.com/Yogendra2804/Manual-JWT-Notes-App
-cd FAST_API_Manual_JWT
+git clone https://github.com/Yogendra2804/Manual-JWT-Notes-App.git
+cd Manual-JWT-Notes-App
 ```
 
-### 2. Set Up Virtual Environment & Install Dependencies
-```bash
-python -m venv venv
-# On Windows:
-venv\Scripts\activate
-# On Linux/macOS:
-source venv/bin/activate
+### 2. Create & Activate a Virtual Environment
+- **On Windows**:
+  ```cmd
+  python -m venv venv
+  venv\Scripts\activate
+  ```
+- **On macOS / Linux**:
+  ```bash
+  python3 -m venv venv
+  source venv/bin/activate
+  ```
 
+### 3. Install Python Dependencies
+```bash
 pip install -r requirements.txt
 ```
 
-### 3. Run Development Server
+### 4. Start the Application
+Run the uvicorn development server:
 ```bash
 python -m uvicorn main:app --port 8000 --reload
 ```
 
-- Open **[http://localhost:8000](http://localhost:8000)** in your browser.
-- Interactive Swagger API docs: **[http://localhost:8000/docs](http://localhost:8000/docs)**.
+- Open your browser and navigate to: **[http://localhost:8000](http://localhost:8000)**
+- Interactive API Documentation (Swagger): **[http://localhost:8000/docs](http://localhost:8000/docs)**
 
 ---
 
@@ -166,7 +176,7 @@ python -m uvicorn main:app --port 8000 --reload
 ## 📁 Project Folder Structure
 
 ```
-FAST_API_Manual_JWT/
+Manual-JWT-Notes-App/
 │
 ├── database/
 │   └── database1.db              # Local SQLite database
@@ -181,7 +191,7 @@ FAST_API_Manual_JWT/
 ├── JWTmodels.py                  # SQLAlchemy User & UserNotes entities
 ├── Token.py                      # Manual JWT generation module
 ├── database_config.py            # SQLite connection settings
-├── engine.py                     # SQLAlchemy session session engine
+├── engine.py                     # SQLAlchemy session engine
 ├── index.html                    # Glassmorphism Single Page Application
 ├── main.py                       # FastAPI entry point & API endpoints
 ├── requirements.txt              # Project Python dependencies
