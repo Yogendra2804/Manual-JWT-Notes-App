@@ -123,7 +123,7 @@ CORS_ORIGINS=*
 
 ### 1. Clone & Navigate
 ```bash
-git clone https://github.com/your-username/FAST_API_Manual_JWT.git
+git clone [https://github.com/your-username/FAST_API_Manual_JWT.git](https://github.com/Yogendra2804/Manual-JWT-Notes-App)
 cd FAST_API_Manual_JWT
 ```
 
