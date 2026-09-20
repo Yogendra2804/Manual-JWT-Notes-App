@@ -92,3 +92,84 @@ WHERE "UserNotes".mail = ?
 FROM user 
 WHERE user.mail = ?
 2026-07-15 17:17:10,814 - sqlalchemy.engine.Engine - INFO - [generated in 0.00049s] ('tester@gmail.com',)
+2026-09-20 23:55:27,301 - Logs.zlogger - INFO - Engine created successfully. !
+2026-09-20 23:55:27,301 - Logs.zlogger - INFO - Base class created successfully. !
+2026-09-20 23:55:27,301 - Logs.zlogger - INFO - Session created successfully. !
+2026-09-20 23:55:27,321 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2026-09-20 23:55:27,323 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("user")
+2026-09-20 23:55:27,323 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-09-20 23:55:27,324 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("UserNotes")
+2026-09-20 23:55:27,325 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-09-20 23:55:27,325 - sqlalchemy.engine.Engine - INFO - COMMIT
+2026-09-21 00:01:22,490 - Logs.zlogger - INFO - Engine created successfully. !
+2026-09-21 00:01:22,490 - Logs.zlogger - INFO - Base class created successfully. !
+2026-09-21 00:01:22,490 - Logs.zlogger - INFO - Session created successfully. !
+2026-09-21 00:01:22,502 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2026-09-21 00:01:22,503 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("user")
+2026-09-21 00:01:22,503 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-09-21 00:01:22,504 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("UserNotes")
+2026-09-21 00:01:22,504 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-09-21 00:01:22,504 - sqlalchemy.engine.Engine - INFO - COMMIT
+2026-09-21 00:01:25,753 - Logs.zlogger - INFO - Engine created successfully. !
+2026-09-21 00:01:25,753 - Logs.zlogger - INFO - Base class created successfully. !
+2026-09-21 00:01:25,753 - Logs.zlogger - INFO - Session created successfully. !
+2026-09-21 00:01:25,765 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2026-09-21 00:01:25,766 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("user")
+2026-09-21 00:01:25,766 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-09-21 00:01:25,766 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("UserNotes")
+2026-09-21 00:01:25,767 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-09-21 00:01:25,767 - sqlalchemy.engine.Engine - INFO - COMMIT
+2026-09-21 00:01:28,211 - Logs.zlogger - INFO - Engine created successfully. !
+2026-09-21 00:01:28,211 - Logs.zlogger - INFO - Base class created successfully. !
+2026-09-21 00:01:28,211 - Logs.zlogger - INFO - Session created successfully. !
+2026-09-21 00:01:28,223 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2026-09-21 00:01:28,224 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("user")
+2026-09-21 00:01:28,225 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-09-21 00:01:28,225 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("UserNotes")
+2026-09-21 00:01:28,225 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-09-21 00:01:28,225 - sqlalchemy.engine.Engine - INFO - COMMIT
+2026-09-21 00:01:30,982 - Logs.zlogger - INFO - Engine created successfully. !
+2026-09-21 00:01:30,982 - Logs.zlogger - INFO - Base class created successfully. !
+2026-09-21 00:01:30,982 - Logs.zlogger - INFO - Session created successfully. !
+2026-09-21 00:01:30,996 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2026-09-21 00:01:30,997 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("user")
+2026-09-21 00:01:30,997 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-09-21 00:01:30,998 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("UserNotes")
+2026-09-21 00:01:30,998 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-09-21 00:01:30,999 - sqlalchemy.engine.Engine - INFO - COMMIT
+2026-09-21 00:01:35,173 - Logs.zlogger - INFO - Engine created successfully. !
+2026-09-21 00:01:35,173 - Logs.zlogger - INFO - Base class created successfully. !
+2026-09-21 00:01:35,173 - Logs.zlogger - INFO - Session created successfully. !
+2026-09-21 00:01:35,184 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2026-09-21 00:01:35,185 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("user")
+2026-09-21 00:01:35,185 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-09-21 00:01:35,186 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("UserNotes")
+2026-09-21 00:01:35,186 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-09-21 00:01:35,186 - sqlalchemy.engine.Engine - INFO - COMMIT
+2026-09-21 00:01:40,345 - Logs.zlogger - INFO - Engine created successfully. !
+2026-09-21 00:01:40,345 - Logs.zlogger - INFO - Base class created successfully. !
+2026-09-21 00:01:40,345 - Logs.zlogger - INFO - Session created successfully. !
+2026-09-21 00:01:40,358 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2026-09-21 00:01:40,359 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("user")
+2026-09-21 00:01:40,359 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-09-21 00:01:40,359 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("UserNotes")
+2026-09-21 00:01:40,359 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-09-21 00:01:40,359 - sqlalchemy.engine.Engine - INFO - COMMIT
+2026-09-21 00:01:47,870 - Logs.zlogger - INFO - Engine created successfully. !
+2026-09-21 00:01:47,870 - Logs.zlogger - INFO - Base class created successfully. !
+2026-09-21 00:01:47,871 - Logs.zlogger - INFO - Session created successfully. !
+2026-09-21 00:01:47,882 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2026-09-21 00:01:47,884 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("user")
+2026-09-21 00:01:47,884 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-09-21 00:01:47,884 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("UserNotes")
+2026-09-21 00:01:47,884 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-09-21 00:01:47,885 - sqlalchemy.engine.Engine - INFO - COMMIT
+2026-09-21 00:12:31,702 - Logs.zlogger - INFO - Engine created successfully. !
+2026-09-21 00:12:31,702 - Logs.zlogger - INFO - Base class created successfully. !
+2026-09-21 00:12:31,703 - Logs.zlogger - INFO - Session created successfully. !
+2026-09-21 00:12:31,729 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2026-09-21 00:12:31,729 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("user")
+2026-09-21 00:12:31,730 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-09-21 00:12:31,730 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("UserNotes")
+2026-09-21 00:12:31,730 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-09-21 00:12:31,730 - sqlalchemy.engine.Engine - INFO - COMMIT
