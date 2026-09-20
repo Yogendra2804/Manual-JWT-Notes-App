@@ -93,4 +93,5 @@ def make_signature(encoded_header , encoded_payload):
     return base64url_encode(signature)
 
 
-print(f"\n\nThe Token is: {generate_token("tester@gmail.com")}")
+if __name__ == "__main__":
+    print(f"\n\nThe Token is: {generate_token('tester@gmail.com')}")
