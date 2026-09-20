@@ -1,5 +1,4 @@
 import logging
-from math import log
 import os
 
 Logs_dir = os.path.dirname(__file__)
