@@ -1,4 +1,3 @@
-import hashlib
 from fastapi import FastAPI , Depends, HTTPException
 from JWT_manual_schema import user_sent_data_signup , user_sent_data_login , user_new_note , user_delete_note, user_delete_account
 from JWT_manul_auth_utils import verfiy_user  , verify_user_token , is_email_available , deleting_user ,password_context
@@ -7,10 +6,6 @@ from engine import session
 from JWTmodels import Users , UserNotes
 from JWT_manual_auth_depends import get_current_user
 from sqlalchemy import select
-
-
-from datetime import datetime , timedelta
-from Token import SECRET_KEY , ALGORITH
 
 
 from Logs.zlogger import logger
