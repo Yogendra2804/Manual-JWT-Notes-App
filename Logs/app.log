@@ -173,3 +173,531 @@ WHERE user.mail = ?
 2026-09-21 00:12:31,730 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("UserNotes")
 2026-09-21 00:12:31,730 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
 2026-09-21 00:12:31,730 - sqlalchemy.engine.Engine - INFO - COMMIT
+2026-09-21 00:15:16,699 - Logs.zlogger - INFO - Signing up user. !
+2026-09-21 00:15:16,700 - Logs.zlogger - INFO - Checking if email is available. !
+2026-09-21 00:15:16,701 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2026-09-21 00:15:16,715 - sqlalchemy.engine.Engine - INFO - SELECT user.id, user.username, user.mail, user.hashed_password 
+FROM user 
+WHERE user.mail = ?
+2026-09-21 00:15:16,716 - sqlalchemy.engine.Engine - INFO - [generated in 0.00081s] ('demo@fastnote.io',)
+2026-09-21 00:15:16,717 - Logs.zlogger - INFO - Email is available. !
+2026-09-21 00:15:16,718 - Logs.zlogger - INFO - User email is available. !
+2026-09-21 00:15:17,303 - sqlalchemy.engine.Engine - INFO - INSERT INTO user (username, mail, hashed_password) VALUES (?, ?, ?)
+2026-09-21 00:15:17,304 - sqlalchemy.engine.Engine - INFO - [generated in 0.00158s] ('demouser', 'demo@fastnote.io', '$2b$12$xCqUjHwejn7tPCufdsiJwOpmR1ZIm7EFNRkts/f2yYg7N9f6OJo8O')
+2026-09-21 00:15:17,311 - sqlalchemy.engine.Engine - INFO - COMMIT
+2026-09-21 00:15:17,318 - Logs.zlogger - INFO - User signed up successfully. !
+2026-09-21 00:15:18,649 - Logs.zlogger - INFO - Logging in user. !
+2026-09-21 00:15:18,650 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2026-09-21 00:15:18,651 - sqlalchemy.engine.Engine - INFO - SELECT user.id, user.username, user.mail, user.hashed_password 
+FROM user 
+WHERE user.mail = ?
+2026-09-21 00:15:18,651 - sqlalchemy.engine.Engine - INFO - [cached since 1.936s ago] ('demo@fastnote.io',)
+2026-09-21 00:15:19,068 - Logs.zlogger - INFO - Generating token. !
+2026-09-21 00:15:19,068 - sqlalchemy.engine.Engine - INFO - SELECT user.id, user.username, user.mail, user.hashed_password 
+FROM user 
+WHERE user.mail = ?
+2026-09-21 00:15:19,069 - sqlalchemy.engine.Engine - INFO - [cached since 2.354s ago] ('demo@fastnote.io',)
+2026-09-21 00:15:19,073 - Logs.zlogger - INFO - User logged in successfully. !
+2026-09-21 00:15:19,084 - Logs.zlogger - INFO - Getting current user. !
+2026-09-21 00:15:19,084 - Logs.zlogger - INFO - Verifying user token. !
+2026-09-21 00:15:19,084 - Logs.zlogger - INFO - User token verified. !
+2026-09-21 00:15:19,086 - Logs.zlogger - INFO - Getting notes. !
+2026-09-21 00:15:19,089 - sqlalchemy.engine.Engine - INFO - SELECT "UserNotes".id, "UserNotes".title, "UserNotes".created_date, "UserNotes".mail, "UserNotes".content 
+FROM "UserNotes" 
+WHERE "UserNotes".mail = ?
+2026-09-21 00:15:19,090 - sqlalchemy.engine.Engine - INFO - [generated in 0.00081s] ('demo@fastnote.io',)
+2026-09-21 00:15:19,092 - Logs.zlogger - INFO - No notes found. !
+2026-09-21 00:15:21,840 - Logs.zlogger - INFO - Getting current user. !
+2026-09-21 00:15:21,841 - Logs.zlogger - INFO - Verifying user token. !
+2026-09-21 00:15:21,841 - Logs.zlogger - INFO - User token verified. !
+2026-09-21 00:15:21,842 - Logs.zlogger - INFO - Writing note. !
+2026-09-21 00:15:21,844 - sqlalchemy.engine.Engine - INFO - INSERT INTO "UserNotes" (title, mail, content) VALUES (?, ?, ?) RETURNING id, created_date
+2026-09-21 00:15:21,848 - sqlalchemy.engine.Engine - INFO - [generated in 0.00404s] ('Project Ideas', 'demo@fastnote.io', '## Backend\n- Refactor auth module\n- Add rate limiting\n\n## Frontend\n- Dark mode toggle\n- Mobile responsiveness\n\n> Ideas captured from stand-up')
+2026-09-21 00:15:21,857 - sqlalchemy.engine.Engine - INFO - COMMIT
+2026-09-21 00:15:21,862 - Logs.zlogger - INFO - Note added successfully. !
+2026-09-21 00:15:21,910 - Logs.zlogger - INFO - Getting current user. !
+2026-09-21 00:15:21,911 - Logs.zlogger - INFO - Verifying user token. !
+2026-09-21 00:15:21,911 - Logs.zlogger - INFO - User token verified. !
+2026-09-21 00:15:21,912 - Logs.zlogger - INFO - Getting notes. !
+2026-09-21 00:15:21,913 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2026-09-21 00:15:21,916 - sqlalchemy.engine.Engine - INFO - SELECT "UserNotes".id, "UserNotes".title, "UserNotes".created_date, "UserNotes".mail, "UserNotes".content 
+FROM "UserNotes" 
+WHERE "UserNotes".mail = ?
+2026-09-21 00:15:21,923 - sqlalchemy.engine.Engine - INFO - [cached since 2.834s ago] ('demo@fastnote.io',)
+2026-09-21 00:15:21,925 - Logs.zlogger - INFO - Notes found. !
+2026-09-21 00:15:23,524 - Logs.zlogger - INFO - Getting current user. !
+2026-09-21 00:15:23,524 - Logs.zlogger - INFO - Verifying user token. !
+2026-09-21 00:15:23,524 - Logs.zlogger - INFO - User token verified. !
+2026-09-21 00:15:23,525 - Logs.zlogger - INFO - Writing note. !
+2026-09-21 00:15:23,526 - sqlalchemy.engine.Engine - INFO - INSERT INTO "UserNotes" (title, mail, content) VALUES (?, ?, ?) RETURNING id, created_date
+2026-09-21 00:15:23,527 - sqlalchemy.engine.Engine - INFO - [cached since 1.683s ago] ('Meeting Notes', 'demo@fastnote.io', '### Sprint Review\n**Date:** Today\n\n- Completed: JWT auth, notes CRUD\n- Blocked: deploy pipeline\n- Next: unit tests\n\nAction: Schedule retro')
+2026-09-21 00:15:23,534 - sqlalchemy.engine.Engine - INFO - COMMIT
+2026-09-21 00:15:23,543 - Logs.zlogger - INFO - Note added successfully. !
+2026-09-21 00:15:23,580 - Logs.zlogger - INFO - Getting current user. !
+2026-09-21 00:15:23,580 - Logs.zlogger - INFO - Verifying user token. !
+2026-09-21 00:15:23,582 - Logs.zlogger - INFO - User token verified. !
+2026-09-21 00:15:23,582 - Logs.zlogger - INFO - Getting notes. !
+2026-09-21 00:15:23,582 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2026-09-21 00:15:23,584 - sqlalchemy.engine.Engine - INFO - SELECT "UserNotes".id, "UserNotes".title, "UserNotes".created_date, "UserNotes".mail, "UserNotes".content 
+FROM "UserNotes" 
+WHERE "UserNotes".mail = ?
+2026-09-21 00:15:23,584 - sqlalchemy.engine.Engine - INFO - [cached since 4.495s ago] ('demo@fastnote.io',)
+2026-09-21 00:15:23,586 - Logs.zlogger - INFO - Notes found. !
+2026-09-21 00:15:25,159 - Logs.zlogger - INFO - Getting current user. !
+2026-09-21 00:15:25,159 - Logs.zlogger - INFO - Verifying user token. !
+2026-09-21 00:15:25,159 - Logs.zlogger - INFO - User token verified. !
+2026-09-21 00:15:25,160 - Logs.zlogger - INFO - Writing note. !
+2026-09-21 00:15:25,160 - sqlalchemy.engine.Engine - INFO - INSERT INTO "UserNotes" (title, mail, content) VALUES (?, ?, ?) RETURNING id, created_date
+2026-09-21 00:15:25,163 - sqlalchemy.engine.Engine - INFO - [cached since 3.319s ago] ('Quick Thoughts', 'demo@fastnote.io', 'Remember to:\n- [ ] Review PR #42\n- [ ] Update docs\n- [ ] Fix the login redirect bug')
+2026-09-21 00:15:25,172 - sqlalchemy.engine.Engine - INFO - COMMIT
+2026-09-21 00:15:25,178 - Logs.zlogger - INFO - Note added successfully. !
+2026-09-21 00:15:25,223 - Logs.zlogger - INFO - Getting current user. !
+2026-09-21 00:15:25,223 - Logs.zlogger - INFO - Verifying user token. !
+2026-09-21 00:15:25,223 - Logs.zlogger - INFO - User token verified. !
+2026-09-21 00:15:25,224 - Logs.zlogger - INFO - Getting notes. !
+2026-09-21 00:15:25,224 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2026-09-21 00:15:25,225 - sqlalchemy.engine.Engine - INFO - SELECT "UserNotes".id, "UserNotes".title, "UserNotes".created_date, "UserNotes".mail, "UserNotes".content 
+FROM "UserNotes" 
+WHERE "UserNotes".mail = ?
+2026-09-21 00:15:25,226 - sqlalchemy.engine.Engine - INFO - [cached since 6.137s ago] ('demo@fastnote.io',)
+2026-09-21 00:15:25,226 - Logs.zlogger - INFO - Notes found. !
+2026-09-21 00:15:26,787 - Logs.zlogger - INFO - Getting current user. !
+2026-09-21 00:15:26,788 - Logs.zlogger - INFO - Verifying user token. !
+2026-09-21 00:15:26,788 - Logs.zlogger - INFO - User token verified. !
+2026-09-21 00:15:26,788 - Logs.zlogger - INFO - Writing note. !
+2026-09-21 00:15:26,789 - sqlalchemy.engine.Engine - INFO - INSERT INTO "UserNotes" (title, mail, content) VALUES (?, ?, ?) RETURNING id, created_date
+2026-09-21 00:15:26,789 - sqlalchemy.engine.Engine - INFO - [cached since 4.946s ago] ('Reading List', 'demo@fastnote.io', '**Books**\n1. Clean Architecture\n2. Designing Data-Intensive Apps\n3. The Pragmatic Programmer')
+2026-09-21 00:15:26,793 - sqlalchemy.engine.Engine - INFO - COMMIT
+2026-09-21 00:15:26,801 - Logs.zlogger - INFO - Note added successfully. !
+2026-09-21 00:15:26,847 - Logs.zlogger - INFO - Getting current user. !
+2026-09-21 00:15:26,848 - Logs.zlogger - INFO - Verifying user token. !
+2026-09-21 00:15:26,848 - Logs.zlogger - INFO - User token verified. !
+2026-09-21 00:15:26,849 - Logs.zlogger - INFO - Getting notes. !
+2026-09-21 00:15:26,849 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2026-09-21 00:15:26,850 - sqlalchemy.engine.Engine - INFO - SELECT "UserNotes".id, "UserNotes".title, "UserNotes".created_date, "UserNotes".mail, "UserNotes".content 
+FROM "UserNotes" 
+WHERE "UserNotes".mail = ?
+2026-09-21 00:15:26,851 - sqlalchemy.engine.Engine - INFO - [cached since 7.762s ago] ('demo@fastnote.io',)
+2026-09-21 00:15:26,853 - Logs.zlogger - INFO - Notes found. !
+2026-09-21 00:15:28,581 - Logs.zlogger - INFO - Getting current user. !
+2026-09-21 00:15:28,582 - Logs.zlogger - INFO - Verifying user token. !
+2026-09-21 00:15:28,582 - Logs.zlogger - INFO - User token verified. !
+2026-09-21 00:15:28,582 - Logs.zlogger - INFO - Writing note. !
+2026-09-21 00:15:28,583 - sqlalchemy.engine.Engine - INFO - INSERT INTO "UserNotes" (title, mail, content) VALUES (?, ?, ?) RETURNING id, created_date
+2026-09-21 00:15:28,584 - sqlalchemy.engine.Engine - INFO - [cached since 6.74s ago] ('Dev Setup', 'demo@fastnote.io', '`\x08ash\npip install -r requirements.txt\nuvicorn main:app --reload\n`\n\nRuns on **port 8000** by default.')
+2026-09-21 00:15:28,592 - sqlalchemy.engine.Engine - INFO - COMMIT
+2026-09-21 00:15:28,601 - Logs.zlogger - INFO - Note added successfully. !
+2026-09-21 00:15:28,638 - Logs.zlogger - INFO - Getting current user. !
+2026-09-21 00:15:28,639 - Logs.zlogger - INFO - Verifying user token. !
+2026-09-21 00:15:28,639 - Logs.zlogger - INFO - User token verified. !
+2026-09-21 00:15:28,640 - Logs.zlogger - INFO - Getting notes. !
+2026-09-21 00:15:28,640 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2026-09-21 00:15:28,642 - sqlalchemy.engine.Engine - INFO - SELECT "UserNotes".id, "UserNotes".title, "UserNotes".created_date, "UserNotes".mail, "UserNotes".content 
+FROM "UserNotes" 
+WHERE "UserNotes".mail = ?
+2026-09-21 00:15:28,642 - sqlalchemy.engine.Engine - INFO - [cached since 9.553s ago] ('demo@fastnote.io',)
+2026-09-21 00:15:28,643 - Logs.zlogger - INFO - Notes found. !
+2026-09-21 00:59:35,169 - Logs.zlogger - INFO - Signing up user. !
+2026-09-21 00:59:35,170 - Logs.zlogger - INFO - Checking if email is available. !
+2026-09-21 00:59:35,179 - sqlalchemy.engine.Engine - INFO - SELECT user.id, user.username, user.mail, user.hashed_password 
+FROM user 
+WHERE user.mail = ?
+2026-09-21 00:59:35,182 - sqlalchemy.engine.Engine - INFO - [cached since 2658s ago] ('tovipul.kr@gmail.com',)
+2026-09-21 00:59:35,185 - Logs.zlogger - INFO - Email is available. !
+2026-09-21 00:59:35,186 - Logs.zlogger - INFO - User email is available. !
+2026-09-21 00:59:35,489 - sqlalchemy.engine.Engine - INFO - INSERT INTO user (username, mail, hashed_password) VALUES (?, ?, ?)
+2026-09-21 00:59:35,490 - sqlalchemy.engine.Engine - INFO - [cached since 2658s ago] ('vipul107', 'tovipul.kr@gmail.com', '$2b$12$MMuFB76EcHwlFqHcezXUYeLviJHneAT3DdKi3qFao0JF8fP5hEWb6')
+2026-09-21 00:59:35,502 - sqlalchemy.engine.Engine - INFO - COMMIT
+2026-09-21 00:59:35,510 - Logs.zlogger - INFO - User signed up successfully. !
+2026-09-21 00:59:41,009 - Logs.zlogger - INFO - Logging in user. !
+2026-09-21 00:59:41,010 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2026-09-21 00:59:41,010 - sqlalchemy.engine.Engine - INFO - SELECT user.id, user.username, user.mail, user.hashed_password 
+FROM user 
+WHERE user.mail = ?
+2026-09-21 00:59:41,011 - sqlalchemy.engine.Engine - INFO - [cached since 2664s ago] ('tovipul.kr@gmail.com',)
+2026-09-21 00:59:41,327 - Logs.zlogger - INFO - Generating token. !
+2026-09-21 00:59:41,328 - sqlalchemy.engine.Engine - INFO - SELECT user.id, user.username, user.mail, user.hashed_password 
+FROM user 
+WHERE user.mail = ?
+2026-09-21 00:59:41,334 - sqlalchemy.engine.Engine - INFO - [cached since 2665s ago] ('tovipul.kr@gmail.com',)
+2026-09-21 00:59:41,335 - Logs.zlogger - INFO - User logged in successfully. !
+2026-09-21 00:59:41,342 - Logs.zlogger - INFO - Getting current user. !
+2026-09-21 00:59:41,342 - Logs.zlogger - INFO - Verifying user token. !
+2026-09-21 00:59:41,342 - Logs.zlogger - INFO - User token verified. !
+2026-09-21 00:59:41,343 - Logs.zlogger - INFO - Getting notes. !
+2026-09-21 00:59:41,344 - sqlalchemy.engine.Engine - INFO - SELECT "UserNotes".id, "UserNotes".title, "UserNotes".created_date, "UserNotes".mail, "UserNotes".content 
+FROM "UserNotes" 
+WHERE "UserNotes".mail = ?
+2026-09-21 00:59:41,345 - sqlalchemy.engine.Engine - INFO - [cached since 2662s ago] ('tovipul.kr@gmail.com',)
+2026-09-21 00:59:41,345 - Logs.zlogger - INFO - No notes found. !
+2026-09-21 00:59:52,449 - Logs.zlogger - INFO - Getting current user. !
+2026-09-21 00:59:52,449 - Logs.zlogger - INFO - Verifying user token. !
+2026-09-21 00:59:52,449 - Logs.zlogger - INFO - User token verified. !
+2026-09-21 00:59:52,449 - Logs.zlogger - INFO - Writing note. !
+2026-09-21 00:59:52,450 - sqlalchemy.engine.Engine - INFO - INSERT INTO "UserNotes" (title, mail, content) VALUES (?, ?, ?) RETURNING id, created_date
+2026-09-21 00:59:52,450 - sqlalchemy.engine.Engine - INFO - [cached since 2671s ago] ('wqggetgw', 'tovipul.kr@gmail.com', '')
+2026-09-21 00:59:52,457 - sqlalchemy.engine.Engine - INFO - COMMIT
+2026-09-21 00:59:52,463 - Logs.zlogger - INFO - Note added successfully. !
+2026-09-21 00:59:52,469 - Logs.zlogger - INFO - Getting current user. !
+2026-09-21 00:59:52,469 - Logs.zlogger - INFO - Verifying user token. !
+2026-09-21 00:59:52,469 - Logs.zlogger - INFO - User token verified. !
+2026-09-21 00:59:52,470 - Logs.zlogger - INFO - Getting notes. !
+2026-09-21 00:59:52,471 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2026-09-21 00:59:52,471 - sqlalchemy.engine.Engine - INFO - SELECT "UserNotes".id, "UserNotes".title, "UserNotes".created_date, "UserNotes".mail, "UserNotes".content 
+FROM "UserNotes" 
+WHERE "UserNotes".mail = ?
+2026-09-21 00:59:52,471 - sqlalchemy.engine.Engine - INFO - [cached since 2673s ago] ('tovipul.kr@gmail.com',)
+2026-09-21 00:59:52,472 - Logs.zlogger - INFO - Notes found. !
+2026-09-21 01:00:23,256 - Logs.zlogger - INFO - Getting current user. !
+2026-09-21 01:00:23,256 - Logs.zlogger - INFO - Verifying user token. !
+2026-09-21 01:00:23,256 - Logs.zlogger - INFO - User token verified. !
+2026-09-21 01:00:23,256 - Logs.zlogger - INFO - Writing note. !
+2026-09-21 01:00:23,266 - sqlalchemy.engine.Engine - INFO - INSERT INTO "UserNotes" (title, mail, content) VALUES (?, ?, ?) RETURNING id, created_date
+2026-09-21 01:00:23,267 - sqlalchemy.engine.Engine - INFO - [cached since 2701s ago] ('wvwrgwrwgrwg', 'tovipul.kr@gmail.com', '')
+2026-09-21 01:00:23,270 - sqlalchemy.engine.Engine - INFO - COMMIT
+2026-09-21 01:00:23,277 - Logs.zlogger - INFO - Note added successfully. !
+2026-09-21 01:00:23,303 - Logs.zlogger - INFO - Getting current user. !
+2026-09-21 01:00:23,303 - Logs.zlogger - INFO - Verifying user token. !
+2026-09-21 01:00:23,303 - Logs.zlogger - INFO - User token verified. !
+2026-09-21 01:00:23,304 - Logs.zlogger - INFO - Getting notes. !
+2026-09-21 01:00:23,304 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2026-09-21 01:00:23,304 - sqlalchemy.engine.Engine - INFO - SELECT "UserNotes".id, "UserNotes".title, "UserNotes".created_date, "UserNotes".mail, "UserNotes".content 
+FROM "UserNotes" 
+WHERE "UserNotes".mail = ?
+2026-09-21 01:00:23,305 - sqlalchemy.engine.Engine - INFO - [cached since 2704s ago] ('tovipul.kr@gmail.com',)
+2026-09-21 01:00:23,305 - Logs.zlogger - INFO - Notes found. !
+2026-09-21 01:00:27,629 - Logs.zlogger - INFO - Getting current user. !
+2026-09-21 01:00:27,629 - Logs.zlogger - INFO - Verifying user token. !
+2026-09-21 01:00:27,630 - Logs.zlogger - INFO - User token verified. !
+2026-09-21 01:00:27,630 - Logs.zlogger - INFO - Deleting note. !
+2026-09-21 01:00:27,633 - sqlalchemy.engine.Engine - INFO - SELECT "UserNotes".id, "UserNotes".title, "UserNotes".created_date, "UserNotes".mail, "UserNotes".content 
+FROM "UserNotes" 
+WHERE "UserNotes".title = ? AND "UserNotes".mail = ?
+2026-09-21 01:00:27,634 - sqlalchemy.engine.Engine - INFO - [generated in 0.00056s] ('wvwrgwrwgrwg', 'tovipul.kr@gmail.com')
+2026-09-21 01:00:27,639 - sqlalchemy.engine.Engine - INFO - DELETE FROM "UserNotes" WHERE "UserNotes".id = ?
+2026-09-21 01:00:27,640 - sqlalchemy.engine.Engine - INFO - [generated in 0.00062s] (14,)
+2026-09-21 01:00:27,642 - sqlalchemy.engine.Engine - INFO - COMMIT
+2026-09-21 01:00:27,647 - Logs.zlogger - INFO - Note deleted successfully. !
+2026-09-21 01:17:24,144 - Logs.zlogger - INFO - Logging in user. !
+2026-09-21 01:17:24,145 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2026-09-21 01:17:24,145 - sqlalchemy.engine.Engine - INFO - SELECT user.id, user.username, user.mail, user.hashed_password 
+FROM user 
+WHERE user.mail = ?
+2026-09-21 01:17:24,145 - sqlalchemy.engine.Engine - INFO - [cached since 3727s ago] ('tovipul.kr@gmail.com',)
+2026-09-21 01:17:24,363 - Logs.zlogger - INFO - Generating token. !
+2026-09-21 01:17:24,364 - sqlalchemy.engine.Engine - INFO - SELECT user.id, user.username, user.mail, user.hashed_password 
+FROM user 
+WHERE user.mail = ?
+2026-09-21 01:17:24,364 - sqlalchemy.engine.Engine - INFO - [cached since 3728s ago] ('tovipul.kr@gmail.com',)
+2026-09-21 01:17:24,365 - Logs.zlogger - INFO - User logged in successfully. !
+2026-09-21 01:17:24,369 - Logs.zlogger - INFO - Getting current user. !
+2026-09-21 01:17:24,369 - Logs.zlogger - INFO - Verifying user token. !
+2026-09-21 01:17:24,369 - Logs.zlogger - INFO - User token verified. !
+2026-09-21 01:17:24,369 - Logs.zlogger - INFO - Getting notes. !
+2026-09-21 01:17:24,370 - sqlalchemy.engine.Engine - INFO - SELECT "UserNotes".id, "UserNotes".title, "UserNotes".created_date, "UserNotes".mail, "UserNotes".content 
+FROM "UserNotes" 
+WHERE "UserNotes".mail = ?
+2026-09-21 01:17:24,370 - sqlalchemy.engine.Engine - INFO - [cached since 3725s ago] ('tovipul.kr@gmail.com',)
+2026-09-21 01:17:24,371 - Logs.zlogger - INFO - Notes found. !
+2026-09-21 01:17:32,971 - Logs.zlogger - INFO - Signing up user. !
+2026-09-21 01:17:32,971 - Logs.zlogger - INFO - Checking if email is available. !
+2026-09-21 01:17:32,971 - sqlalchemy.engine.Engine - INFO - SELECT user.id, user.username, user.mail, user.hashed_password 
+FROM user 
+WHERE user.mail = ?
+2026-09-21 01:17:32,972 - sqlalchemy.engine.Engine - INFO - [cached since 3736s ago] ('tovipul.kr@gmail.com',)
+2026-09-21 01:17:32,972 - Logs.zlogger - INFO - Email is not available. !
+2026-09-21 01:17:43,659 - Logs.zlogger - INFO - Signing up user. !
+2026-09-21 01:17:43,659 - Logs.zlogger - INFO - Checking if email is available. !
+2026-09-21 01:17:43,659 - sqlalchemy.engine.Engine - INFO - SELECT user.id, user.username, user.mail, user.hashed_password 
+FROM user 
+WHERE user.mail = ?
+2026-09-21 01:17:43,660 - sqlalchemy.engine.Engine - INFO - [cached since 3747s ago] ('tovipukr@gmail.com',)
+2026-09-21 01:17:43,660 - Logs.zlogger - INFO - Email is available. !
+2026-09-21 01:17:43,660 - Logs.zlogger - INFO - User email is available. !
+2026-09-21 01:17:43,878 - sqlalchemy.engine.Engine - INFO - INSERT INTO user (username, mail, hashed_password) VALUES (?, ?, ?)
+2026-09-21 01:17:43,878 - sqlalchemy.engine.Engine - INFO - [cached since 3747s ago] ('vipul108', 'tovipukr@gmail.com', '$2b$12$TT3XikRrBpIzz9mEncmKNuJuNNk7dfEpPDdrJipkW6WOkzKGjxuca')
+2026-09-21 01:17:43,881 - sqlalchemy.engine.Engine - INFO - COMMIT
+2026-09-21 01:17:43,885 - Logs.zlogger - INFO - User signed up successfully. !
+2026-09-21 01:17:50,218 - Logs.zlogger - INFO - Logging in user. !
+2026-09-21 01:17:50,218 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2026-09-21 01:17:50,219 - sqlalchemy.engine.Engine - INFO - SELECT user.id, user.username, user.mail, user.hashed_password 
+FROM user 
+WHERE user.mail = ?
+2026-09-21 01:17:50,219 - sqlalchemy.engine.Engine - INFO - [cached since 3754s ago] ('tovipukr@gmail.com',)
+2026-09-21 01:17:50,438 - Logs.zlogger - INFO - Generating token. !
+2026-09-21 01:17:50,439 - sqlalchemy.engine.Engine - INFO - SELECT user.id, user.username, user.mail, user.hashed_password 
+FROM user 
+WHERE user.mail = ?
+2026-09-21 01:17:50,439 - sqlalchemy.engine.Engine - INFO - [cached since 3754s ago] ('tovipukr@gmail.com',)
+2026-09-21 01:17:50,440 - Logs.zlogger - INFO - User logged in successfully. !
+2026-09-21 01:17:50,443 - Logs.zlogger - INFO - Getting current user. !
+2026-09-21 01:17:50,443 - Logs.zlogger - INFO - Verifying user token. !
+2026-09-21 01:17:50,443 - Logs.zlogger - INFO - User token verified. !
+2026-09-21 01:17:50,444 - Logs.zlogger - INFO - Getting notes. !
+2026-09-21 01:17:50,444 - sqlalchemy.engine.Engine - INFO - SELECT "UserNotes".id, "UserNotes".title, "UserNotes".created_date, "UserNotes".mail, "UserNotes".content 
+FROM "UserNotes" 
+WHERE "UserNotes".mail = ?
+2026-09-21 01:17:50,446 - sqlalchemy.engine.Engine - INFO - [cached since 3751s ago] ('tovipukr@gmail.com',)
+2026-09-21 01:17:50,446 - Logs.zlogger - INFO - No notes found. !
+2026-09-21 01:18:09,705 - Logs.zlogger - INFO - Getting current user. !
+2026-09-21 01:18:09,705 - Logs.zlogger - INFO - Verifying user token. !
+2026-09-21 01:18:09,705 - Logs.zlogger - INFO - User token verified. !
+2026-09-21 01:18:09,706 - Logs.zlogger - INFO - Writing note. !
+2026-09-21 01:18:09,706 - sqlalchemy.engine.Engine - INFO - INSERT INTO "UserNotes" (title, mail, content) VALUES (?, ?, ?) RETURNING id, created_date
+2026-09-21 01:18:09,707 - sqlalchemy.engine.Engine - INFO - [cached since 3768s ago] ('vit', 'tovipukr@gmail.com', 'qbmfvrfrmbwmhvr')
+2026-09-21 01:18:09,709 - sqlalchemy.engine.Engine - INFO - COMMIT
+2026-09-21 01:18:09,713 - Logs.zlogger - INFO - Note added successfully. !
+2026-09-21 01:18:09,727 - Logs.zlogger - INFO - Getting current user. !
+2026-09-21 01:18:09,727 - Logs.zlogger - INFO - Verifying user token. !
+2026-09-21 01:18:09,727 - Logs.zlogger - INFO - User token verified. !
+2026-09-21 01:18:09,727 - Logs.zlogger - INFO - Getting notes. !
+2026-09-21 01:18:09,728 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2026-09-21 01:18:09,728 - sqlalchemy.engine.Engine - INFO - SELECT "UserNotes".id, "UserNotes".title, "UserNotes".created_date, "UserNotes".mail, "UserNotes".content 
+FROM "UserNotes" 
+WHERE "UserNotes".mail = ?
+2026-09-21 01:18:09,728 - sqlalchemy.engine.Engine - INFO - [cached since 3771s ago] ('tovipukr@gmail.com',)
+2026-09-21 01:18:09,729 - Logs.zlogger - INFO - Notes found. !
+2026-09-21 01:18:21,553 - Logs.zlogger - INFO - Getting current user. !
+2026-09-21 01:18:21,554 - Logs.zlogger - INFO - Verifying user token. !
+2026-09-21 01:18:21,554 - Logs.zlogger - INFO - User token verified. !
+2026-09-21 01:18:21,554 - Logs.zlogger - INFO - Writing note. !
+2026-09-21 01:18:21,554 - sqlalchemy.engine.Engine - INFO - INSERT INTO "UserNotes" (title, mail, content) VALUES (?, ?, ?) RETURNING id, created_date
+2026-09-21 01:18:21,555 - sqlalchemy.engine.Engine - INFO - [cached since 3780s ago] ('fejgvj2', 'tovipukr@gmail.com', 'eff4f4f4ff4')
+2026-09-21 01:18:21,557 - sqlalchemy.engine.Engine - INFO - COMMIT
+2026-09-21 01:18:21,559 - Logs.zlogger - INFO - Note added successfully. !
+2026-09-21 01:18:21,575 - Logs.zlogger - INFO - Getting current user. !
+2026-09-21 01:18:21,575 - Logs.zlogger - INFO - Verifying user token. !
+2026-09-21 01:18:21,576 - Logs.zlogger - INFO - User token verified. !
+2026-09-21 01:18:21,576 - Logs.zlogger - INFO - Getting notes. !
+2026-09-21 01:18:21,576 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2026-09-21 01:18:21,576 - sqlalchemy.engine.Engine - INFO - SELECT "UserNotes".id, "UserNotes".title, "UserNotes".created_date, "UserNotes".mail, "UserNotes".content 
+FROM "UserNotes" 
+WHERE "UserNotes".mail = ?
+2026-09-21 01:18:21,577 - sqlalchemy.engine.Engine - INFO - [cached since 3782s ago] ('tovipukr@gmail.com',)
+2026-09-21 01:18:21,577 - Logs.zlogger - INFO - Notes found. !
+2026-09-21 01:19:03,392 - Logs.zlogger - INFO - Getting current user. !
+2026-09-21 01:19:03,393 - Logs.zlogger - INFO - Verifying user token. !
+2026-09-21 01:19:03,393 - Logs.zlogger - INFO - User token verified. !
+2026-09-21 01:19:03,393 - Logs.zlogger - INFO - Deleting user. !
+2026-09-21 01:19:03,393 - sqlalchemy.engine.Engine - INFO - SELECT user.id, user.username, user.mail, user.hashed_password 
+FROM user 
+WHERE user.mail = ?
+2026-09-21 01:19:03,394 - sqlalchemy.engine.Engine - INFO - [cached since 3827s ago] ('tovipukr@gmail.com',)
+2026-09-21 01:19:03,603 - sqlalchemy.engine.Engine - INFO - SELECT user.id, user.username, user.mail, user.hashed_password 
+FROM user 
+WHERE user.mail = ?
+2026-09-21 01:19:03,603 - sqlalchemy.engine.Engine - INFO - [cached since 3827s ago] ('tovipukr@gmail.com',)
+2026-09-21 01:19:03,605 - sqlalchemy.engine.Engine - INFO - DELETE FROM user WHERE user.id = ?
+2026-09-21 01:19:03,605 - sqlalchemy.engine.Engine - INFO - [generated in 0.00030s] (6,)
+2026-09-21 01:19:03,607 - sqlalchemy.engine.Engine - INFO - COMMIT
+2026-09-21 01:19:03,610 - Logs.zlogger - INFO - User deleted successfully. !
+2026-09-21 01:19:03,610 - Logs.zlogger - INFO - User deleted successfully. !
+2026-09-21 01:19:07,899 - Logs.zlogger - INFO - Logging in user. !
+2026-09-21 01:19:07,899 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2026-09-21 01:19:07,901 - sqlalchemy.engine.Engine - INFO - SELECT user.id, user.username, user.mail, user.hashed_password 
+FROM user 
+WHERE user.mail = ?
+2026-09-21 01:19:07,901 - sqlalchemy.engine.Engine - INFO - [cached since 3831s ago] ('tovipukr@gmail.com',)
+2026-09-21 01:19:07,901 - Logs.zlogger - ERROR - User not found. !
+2026-09-21 01:23:58,719 - Logs.zlogger - INFO - Logging in user. !
+2026-09-21 01:23:58,720 - sqlalchemy.engine.Engine - INFO - SELECT user.id, user.username, user.mail, user.hashed_password 
+FROM user 
+WHERE user.mail = ?
+2026-09-21 01:23:58,721 - sqlalchemy.engine.Engine - INFO - [cached since 4122s ago] ('demo@fastnote.io',)
+2026-09-21 01:23:58,939 - Logs.zlogger - INFO - Generating token. !
+2026-09-21 01:23:58,939 - sqlalchemy.engine.Engine - INFO - SELECT user.id, user.username, user.mail, user.hashed_password 
+FROM user 
+WHERE user.mail = ?
+2026-09-21 01:23:58,940 - sqlalchemy.engine.Engine - INFO - [cached since 4122s ago] ('demo@fastnote.io',)
+2026-09-21 01:23:58,941 - Logs.zlogger - INFO - User logged in successfully. !
+2026-09-21 01:23:58,950 - Logs.zlogger - INFO - Getting current user. !
+2026-09-21 01:23:58,950 - Logs.zlogger - INFO - Verifying user token. !
+2026-09-21 01:23:58,950 - Logs.zlogger - INFO - User token verified. !
+2026-09-21 01:23:58,950 - Logs.zlogger - INFO - Getting notes. !
+2026-09-21 01:23:58,951 - sqlalchemy.engine.Engine - INFO - SELECT "UserNotes".id, "UserNotes".title, "UserNotes".created_date, "UserNotes".mail, "UserNotes".content 
+FROM "UserNotes" 
+WHERE "UserNotes".mail = ?
+2026-09-21 01:23:58,951 - sqlalchemy.engine.Engine - INFO - [cached since 4120s ago] ('demo@fastnote.io',)
+2026-09-21 01:23:58,951 - Logs.zlogger - INFO - Notes found. !
+2026-09-21 01:24:01,518 - Logs.zlogger - INFO - Getting current user. !
+2026-09-21 01:24:01,518 - Logs.zlogger - INFO - Verifying user token. !
+2026-09-21 01:24:01,518 - Logs.zlogger - INFO - User token verified. !
+2026-09-21 01:24:01,518 - Logs.zlogger - INFO - Writing note. !
+2026-09-21 01:24:01,519 - sqlalchemy.engine.Engine - INFO - INSERT INTO "UserNotes" (title, mail, content) VALUES (?, ?, ?) RETURNING id, created_date
+2026-09-21 01:24:01,519 - sqlalchemy.engine.Engine - INFO - [cached since 4120s ago] ('Color Test Note', 'demo@fastnote.io', 'This note should be Rose colored.')
+2026-09-21 01:24:01,520 - sqlalchemy.engine.Engine - INFO - COMMIT
+2026-09-21 01:24:01,523 - Logs.zlogger - INFO - Note added successfully. !
+2026-09-21 01:24:01,547 - Logs.zlogger - INFO - Getting current user. !
+2026-09-21 01:24:01,547 - Logs.zlogger - INFO - Verifying user token. !
+2026-09-21 01:24:01,547 - Logs.zlogger - INFO - User token verified. !
+2026-09-21 01:24:01,547 - Logs.zlogger - INFO - Getting notes. !
+2026-09-21 01:24:01,548 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2026-09-21 01:24:01,548 - sqlalchemy.engine.Engine - INFO - SELECT "UserNotes".id, "UserNotes".title, "UserNotes".created_date, "UserNotes".mail, "UserNotes".content 
+FROM "UserNotes" 
+WHERE "UserNotes".mail = ?
+2026-09-21 01:24:01,548 - sqlalchemy.engine.Engine - INFO - [cached since 4122s ago] ('demo@fastnote.io',)
+2026-09-21 01:24:01,549 - Logs.zlogger - INFO - Notes found. !
+2026-09-21 01:24:04,453 - Logs.zlogger - INFO - Getting current user. !
+2026-09-21 01:24:04,453 - Logs.zlogger - INFO - Verifying user token. !
+2026-09-21 01:24:04,453 - Logs.zlogger - INFO - User token verified. !
+2026-09-21 01:24:04,454 - Logs.zlogger - INFO - Deleting note. !
+2026-09-21 01:24:04,454 - sqlalchemy.engine.Engine - INFO - SELECT "UserNotes".id, "UserNotes".title, "UserNotes".created_date, "UserNotes".mail, "UserNotes".content 
+FROM "UserNotes" 
+WHERE "UserNotes".title = ? AND "UserNotes".mail = ?
+2026-09-21 01:24:04,455 - sqlalchemy.engine.Engine - INFO - [cached since 1417s ago] ('Color Test Note', 'demo@fastnote.io')
+2026-09-21 01:24:04,456 - sqlalchemy.engine.Engine - INFO - DELETE FROM "UserNotes" WHERE "UserNotes".id = ?
+2026-09-21 01:24:04,456 - sqlalchemy.engine.Engine - INFO - [cached since 1417s ago] (16,)
+2026-09-21 01:24:04,457 - sqlalchemy.engine.Engine - INFO - COMMIT
+2026-09-21 01:24:04,462 - Logs.zlogger - INFO - Note deleted successfully. !
+2026-09-21 01:24:04,506 - Logs.zlogger - INFO - Getting current user. !
+2026-09-21 01:24:04,506 - Logs.zlogger - INFO - Verifying user token. !
+2026-09-21 01:24:04,506 - Logs.zlogger - INFO - User token verified. !
+2026-09-21 01:24:04,507 - Logs.zlogger - INFO - Writing note. !
+2026-09-21 01:24:04,507 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2026-09-21 01:24:04,507 - sqlalchemy.engine.Engine - INFO - INSERT INTO "UserNotes" (title, mail, content) VALUES (?, ?, ?) RETURNING id, created_date
+2026-09-21 01:24:04,508 - sqlalchemy.engine.Engine - INFO - [cached since 4123s ago] ('Color Test Note', 'demo@fastnote.io', 'This note should be Rose colored.')
+2026-09-21 01:24:04,509 - sqlalchemy.engine.Engine - INFO - COMMIT
+2026-09-21 01:24:04,512 - Logs.zlogger - INFO - Note added successfully. !
+2026-09-21 01:24:04,517 - Logs.zlogger - INFO - Getting current user. !
+2026-09-21 01:24:04,517 - Logs.zlogger - INFO - Verifying user token. !
+2026-09-21 01:24:04,517 - Logs.zlogger - INFO - User token verified. !
+2026-09-21 01:24:04,517 - Logs.zlogger - INFO - Getting notes. !
+2026-09-21 01:24:04,517 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2026-09-21 01:24:04,517 - sqlalchemy.engine.Engine - INFO - SELECT "UserNotes".id, "UserNotes".title, "UserNotes".created_date, "UserNotes".mail, "UserNotes".content 
+FROM "UserNotes" 
+WHERE "UserNotes".mail = ?
+2026-09-21 01:24:04,517 - sqlalchemy.engine.Engine - INFO - [cached since 4125s ago] ('demo@fastnote.io',)
+2026-09-21 01:24:04,518 - Logs.zlogger - INFO - Notes found. !
+2026-09-21 01:31:01,554 - Logs.zlogger - INFO - Logging in user. !
+2026-09-21 01:31:01,555 - sqlalchemy.engine.Engine - INFO - SELECT user.id, user.username, user.mail, user.hashed_password 
+FROM user 
+WHERE user.mail = ?
+2026-09-21 01:31:01,555 - sqlalchemy.engine.Engine - INFO - [cached since 4545s ago] ('tovipukr@gmail.com',)
+2026-09-21 01:31:01,558 - Logs.zlogger - ERROR - User not found. !
+2026-09-21 01:31:11,220 - Logs.zlogger - INFO - Logging in user. !
+2026-09-21 01:31:11,220 - sqlalchemy.engine.Engine - INFO - SELECT user.id, user.username, user.mail, user.hashed_password 
+FROM user 
+WHERE user.mail = ?
+2026-09-21 01:31:11,221 - sqlalchemy.engine.Engine - INFO - [cached since 4555s ago] ('tovipul.kr@gmail.com',)
+2026-09-21 01:31:11,447 - Logs.zlogger - INFO - Generating token. !
+2026-09-21 01:31:11,448 - sqlalchemy.engine.Engine - INFO - SELECT user.id, user.username, user.mail, user.hashed_password 
+FROM user 
+WHERE user.mail = ?
+2026-09-21 01:31:11,448 - sqlalchemy.engine.Engine - INFO - [cached since 4555s ago] ('tovipul.kr@gmail.com',)
+2026-09-21 01:31:11,449 - Logs.zlogger - INFO - User logged in successfully. !
+2026-09-21 01:31:11,453 - Logs.zlogger - INFO - Getting current user. !
+2026-09-21 01:31:11,453 - Logs.zlogger - INFO - Verifying user token. !
+2026-09-21 01:31:11,454 - Logs.zlogger - INFO - User token verified. !
+2026-09-21 01:31:11,454 - Logs.zlogger - INFO - Getting notes. !
+2026-09-21 01:31:11,455 - sqlalchemy.engine.Engine - INFO - SELECT "UserNotes".id, "UserNotes".title, "UserNotes".created_date, "UserNotes".mail, "UserNotes".content 
+FROM "UserNotes" 
+WHERE "UserNotes".mail = ?
+2026-09-21 01:31:11,455 - sqlalchemy.engine.Engine - INFO - [cached since 4552s ago] ('tovipul.kr@gmail.com',)
+2026-09-21 01:31:11,455 - Logs.zlogger - INFO - Notes found. !
+2026-09-21 01:31:24,115 - Logs.zlogger - INFO - Getting current user. !
+2026-09-21 01:31:24,115 - Logs.zlogger - INFO - Verifying user token. !
+2026-09-21 01:31:24,115 - Logs.zlogger - INFO - User token verified. !
+2026-09-21 01:31:24,116 - Logs.zlogger - INFO - Deleting note. !
+2026-09-21 01:31:24,116 - sqlalchemy.engine.Engine - INFO - SELECT "UserNotes".id, "UserNotes".title, "UserNotes".created_date, "UserNotes".mail, "UserNotes".content 
+FROM "UserNotes" 
+WHERE "UserNotes".title = ? AND "UserNotes".mail = ?
+2026-09-21 01:31:24,116 - sqlalchemy.engine.Engine - INFO - [cached since 1856s ago] ('wqggetgw', 'tovipul.kr@gmail.com')
+2026-09-21 01:31:24,117 - sqlalchemy.engine.Engine - INFO - DELETE FROM "UserNotes" WHERE "UserNotes".id = ?
+2026-09-21 01:31:24,117 - sqlalchemy.engine.Engine - INFO - [cached since 1856s ago] (13,)
+2026-09-21 01:31:24,120 - sqlalchemy.engine.Engine - INFO - COMMIT
+2026-09-21 01:31:24,123 - Logs.zlogger - INFO - Note deleted successfully. !
+2026-09-21 01:31:24,150 - Logs.zlogger - INFO - Getting current user. !
+2026-09-21 01:31:24,150 - Logs.zlogger - INFO - Verifying user token. !
+2026-09-21 01:31:24,150 - Logs.zlogger - INFO - User token verified. !
+2026-09-21 01:31:24,151 - Logs.zlogger - INFO - Writing note. !
+2026-09-21 01:31:24,151 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2026-09-21 01:31:24,152 - sqlalchemy.engine.Engine - INFO - INSERT INTO "UserNotes" (title, mail, content) VALUES (?, ?, ?) RETURNING id, created_date
+2026-09-21 01:31:24,152 - sqlalchemy.engine.Engine - INFO - [cached since 4562s ago] ('wqggetgw', 'tovipul.kr@gmail.com', 'dqdqefqfqeeq')
+2026-09-21 01:31:24,153 - sqlalchemy.engine.Engine - INFO - COMMIT
+2026-09-21 01:31:24,157 - Logs.zlogger - INFO - Note added successfully. !
+2026-09-21 01:31:24,160 - Logs.zlogger - INFO - Getting current user. !
+2026-09-21 01:31:24,160 - Logs.zlogger - INFO - Verifying user token. !
+2026-09-21 01:31:24,161 - Logs.zlogger - INFO - User token verified. !
+2026-09-21 01:31:24,161 - Logs.zlogger - INFO - Getting notes. !
+2026-09-21 01:31:24,162 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2026-09-21 01:31:24,163 - sqlalchemy.engine.Engine - INFO - SELECT "UserNotes".id, "UserNotes".title, "UserNotes".created_date, "UserNotes".mail, "UserNotes".content 
+FROM "UserNotes" 
+WHERE "UserNotes".mail = ?
+2026-09-21 01:31:24,163 - sqlalchemy.engine.Engine - INFO - [cached since 4565s ago] ('tovipul.kr@gmail.com',)
+2026-09-21 01:31:24,163 - Logs.zlogger - INFO - Notes found. !
+2026-09-21 01:31:34,625 - Logs.zlogger - INFO - Getting current user. !
+2026-09-21 01:31:34,625 - Logs.zlogger - INFO - Verifying user token. !
+2026-09-21 01:31:34,625 - Logs.zlogger - INFO - User token verified. !
+2026-09-21 01:31:34,625 - Logs.zlogger - INFO - Writing note. !
+2026-09-21 01:31:34,625 - sqlalchemy.engine.Engine - INFO - INSERT INTO "UserNotes" (title, mail, content) VALUES (?, ?, ?) RETURNING id, created_date
+2026-09-21 01:31:34,626 - sqlalchemy.engine.Engine - INFO - [cached since 4573s ago] ('wddw', 'tovipul.kr@gmail.com', 'wdwdw')
+2026-09-21 01:31:34,627 - sqlalchemy.engine.Engine - INFO - COMMIT
+2026-09-21 01:31:34,633 - Logs.zlogger - INFO - Note added successfully. !
+2026-09-21 01:31:34,650 - Logs.zlogger - INFO - Getting current user. !
+2026-09-21 01:31:34,650 - Logs.zlogger - INFO - Verifying user token. !
+2026-09-21 01:31:34,650 - Logs.zlogger - INFO - User token verified. !
+2026-09-21 01:31:34,650 - Logs.zlogger - INFO - Getting notes. !
+2026-09-21 01:31:34,651 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2026-09-21 01:31:34,651 - sqlalchemy.engine.Engine - INFO - SELECT "UserNotes".id, "UserNotes".title, "UserNotes".created_date, "UserNotes".mail, "UserNotes".content 
+FROM "UserNotes" 
+WHERE "UserNotes".mail = ?
+2026-09-21 01:31:34,651 - sqlalchemy.engine.Engine - INFO - [cached since 4576s ago] ('tovipul.kr@gmail.com',)
+2026-09-21 01:31:34,652 - Logs.zlogger - INFO - Notes found. !
+2026-09-21 01:39:15,840 - Logs.zlogger - INFO - Logging in user. !
+2026-09-21 01:39:15,840 - sqlalchemy.engine.Engine - INFO - SELECT user.id, user.username, user.mail, user.hashed_password 
+FROM user 
+WHERE user.mail = ?
+2026-09-21 01:39:15,841 - sqlalchemy.engine.Engine - INFO - [cached since 5039s ago] ('demo@fastnote.io',)
+2026-09-21 01:39:16,055 - Logs.zlogger - INFO - Generating token. !
+2026-09-21 01:39:16,055 - sqlalchemy.engine.Engine - INFO - SELECT user.id, user.username, user.mail, user.hashed_password 
+FROM user 
+WHERE user.mail = ?
+2026-09-21 01:39:16,056 - sqlalchemy.engine.Engine - INFO - [cached since 5039s ago] ('demo@fastnote.io',)
+2026-09-21 01:39:16,056 - Logs.zlogger - INFO - User logged in successfully. !
+2026-09-21 01:39:16,059 - Logs.zlogger - INFO - Getting current user. !
+2026-09-21 01:39:16,059 - Logs.zlogger - INFO - Verifying user token. !
+2026-09-21 01:39:16,059 - Logs.zlogger - INFO - User token verified. !
+2026-09-21 01:39:16,060 - Logs.zlogger - INFO - Getting notes. !
+2026-09-21 01:39:16,060 - sqlalchemy.engine.Engine - INFO - SELECT "UserNotes".id, "UserNotes".title, "UserNotes".created_date, "UserNotes".mail, "UserNotes".content 
+FROM "UserNotes" 
+WHERE "UserNotes".mail = ?
+2026-09-21 01:39:16,060 - sqlalchemy.engine.Engine - INFO - [cached since 5037s ago] ('demo@fastnote.io',)
+2026-09-21 01:39:16,061 - Logs.zlogger - INFO - Notes found. !
+2026-09-21 01:41:15,170 - Logs.zlogger - INFO - Logging in user. !
+2026-09-21 01:41:15,171 - sqlalchemy.engine.Engine - INFO - SELECT user.id, user.username, user.mail, user.hashed_password 
+FROM user 
+WHERE user.mail = ?
+2026-09-21 01:41:15,172 - sqlalchemy.engine.Engine - INFO - [cached since 5158s ago] ('tovipul.kr@gmail.com',)
+2026-09-21 01:41:15,395 - Logs.zlogger - INFO - Generating token. !
+2026-09-21 01:41:15,395 - sqlalchemy.engine.Engine - INFO - SELECT user.id, user.username, user.mail, user.hashed_password 
+FROM user 
+WHERE user.mail = ?
+2026-09-21 01:41:15,396 - sqlalchemy.engine.Engine - INFO - [cached since 5159s ago] ('tovipul.kr@gmail.com',)
+2026-09-21 01:41:15,397 - Logs.zlogger - INFO - User logged in successfully. !
+2026-09-21 01:41:15,401 - Logs.zlogger - INFO - Getting current user. !
+2026-09-21 01:41:15,401 - Logs.zlogger - INFO - Verifying user token. !
+2026-09-21 01:41:15,401 - Logs.zlogger - INFO - User token verified. !
+2026-09-21 01:41:15,401 - Logs.zlogger - INFO - Getting notes. !
+2026-09-21 01:41:15,402 - sqlalchemy.engine.Engine - INFO - SELECT "UserNotes".id, "UserNotes".title, "UserNotes".created_date, "UserNotes".mail, "UserNotes".content 
+FROM "UserNotes" 
+WHERE "UserNotes".mail = ?
+2026-09-21 01:41:15,402 - sqlalchemy.engine.Engine - INFO - [cached since 5156s ago] ('tovipul.kr@gmail.com',)
+2026-09-21 01:41:15,402 - Logs.zlogger - INFO - Notes found. !
+2026-09-21 01:41:37,761 - Logs.zlogger - INFO - Getting current user. !
+2026-09-21 01:41:37,761 - Logs.zlogger - INFO - Verifying user token. !
+2026-09-21 01:41:37,761 - Logs.zlogger - INFO - User token verified. !
+2026-09-21 01:41:37,762 - Logs.zlogger - INFO - Writing note. !
+2026-09-21 01:41:37,762 - sqlalchemy.engine.Engine - INFO - INSERT INTO "UserNotes" (title, mail, content) VALUES (?, ?, ?) RETURNING id, created_date
+2026-09-21 01:41:37,762 - sqlalchemy.engine.Engine - INFO - [cached since 5176s ago] ('hfh', 'tovipul.kr@gmail.com', 'lvjvkh')
+2026-09-21 01:41:37,765 - sqlalchemy.engine.Engine - INFO - COMMIT
+2026-09-21 01:41:37,769 - Logs.zlogger - INFO - Note added successfully. !
+2026-09-21 01:41:37,774 - Logs.zlogger - INFO - Getting current user. !
+2026-09-21 01:41:37,774 - Logs.zlogger - INFO - Verifying user token. !
+2026-09-21 01:41:37,774 - Logs.zlogger - INFO - User token verified. !
+2026-09-21 01:41:37,775 - Logs.zlogger - INFO - Getting notes. !
+2026-09-21 01:41:37,775 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2026-09-21 01:41:37,775 - sqlalchemy.engine.Engine - INFO - SELECT "UserNotes".id, "UserNotes".title, "UserNotes".created_date, "UserNotes".mail, "UserNotes".content 
+FROM "UserNotes" 
+WHERE "UserNotes".mail = ?
+2026-09-21 01:41:37,776 - sqlalchemy.engine.Engine - INFO - [cached since 5179s ago] ('tovipul.kr@gmail.com',)
+2026-09-21 01:41:37,776 - Logs.zlogger - INFO - Notes found. !
